@@ -1,0 +1,14 @@
+.beads
+.claude
+.gitnexus
+.freebuff
+.agents
+skills-lock.json
+graphify-out/
+# Go + React build noise
+node_modules/
+dist/
+frontend/dist/
+frontend/wailsjs/
+build/bin/
+*.exe

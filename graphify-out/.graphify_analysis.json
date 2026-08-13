@@ -1,0 +1,301 @@
+{
+  "communities": {
+    "0": [
+      "claude",
+      "claude_always_do",
+      "claude_architecture_overview",
+      "claude_beads_issue_tracker",
+      "claude_build_test",
+      "claude_cli",
+      "claude_conventions_patterns",
+      "claude_gitnexus_code_intelligence",
+      "claude_never_do",
+      "claude_operating_manual_read_first",
+      "claude_project_instructions_for_ai_agents",
+      "claude_quick_reference",
+      "claude_resources",
+      "claude_rules",
+      "claude_session_completion"
+    ],
+    "1": [
+      "agents",
+      "agents_agent_instructions",
+      "agents_always_do",
+      "agents_beads_issue_tracker",
+      "agents_cli",
+      "agents_gitnexus_code_intelligence",
+      "agents_never_do",
+      "agents_non_interactive_shell_commands",
+      "agents_operating_manual_read_first",
+      "agents_quick_reference",
+      "agents_quick_reference_64",
+      "agents_resources",
+      "agents_rules",
+      "agents_session_completion"
+    ],
+    "2": [
+      "repo::knowledge",
+      "repo::knowledge_1_graphify_codebase_graph",
+      "repo::knowledge_2_gitnexus_call_graph_intelligence",
+      "repo::knowledge_3_fallback_cat_grep_ls",
+      "repo::knowledge_deliverables_when_the_plan_crystallises",
+      "repo::knowledge_finalization_commit_push",
+      "repo::knowledge_grill_mode_planning_only_no_implementation",
+      "repo::knowledge_knowledge_agent_operating_manual",
+      "repo::knowledge_modes",
+      "repo::knowledge_project_snapshot",
+      "repo::knowledge_rules",
+      "repo::knowledge_understanding_the_code_all_modes"
+    ],
+    "3": [
+      "repo-2::docs_blueprint_appkey",
+      "repo-2::docs_blueprint_definerstripper",
+      "repo-2::docs_blueprint_fastbyteoffsetscanner",
+      "repo-2::docs_blueprint_mariadbcli",
+      "repo-2::docs_blueprint_portablecatalog",
+      "repo-2::docs_blueprint_progressreader",
+      "repo-2::docs_blueprint_sessionflagsheader",
+      "repo-2::docs_blueprint_smartrecoverymodal",
+      "repo-2::docs_blueprint_virtualscrollgrid",
+      "repo-2::docs_blueprint_virtualstreamer",
+      "repo-2::docs_blueprint_wailsipcevents",
+      "repo-2::docs_coding_rules_virtualscrolling"
+    ],
+    "4": [
+      "repo-2::docs_graphify_commands_affected",
+      "repo-2::docs_graphify_commands_explain",
+      "repo-2::docs_graphify_commands_mcpserver",
+      "repo-2::docs_graphify_commands_mergegraphs",
+      "repo-2::docs_graphify_commands_path",
+      "repo-2::docs_graphify_commands_query",
+      "repo-2::knowledge_agentsemanticextraction",
+      "repo-2::knowledge_fallbackshell",
+      "repo-2::knowledge_gitnexus",
+      "repo-2::knowledge_graphify",
+      "repo-2::knowledge_graphupdateprocess"
+    ],
+    "5": [
+      "repo-2::docs_coding_rules_claimorderloop",
+      "repo-2::docs_coding_rules_linecap300",
+      "repo-2::docs_coding_rules_ponytail_ladder",
+      "repo-2::docs_coding_rules_stdlibfirst",
+      "repo-2::docs_coding_rules_verificationgates",
+      "repo-2::knowledge_claimorderchecklist",
+      "repo-2::knowledge_codingmode",
+      "repo-2::knowledge_grillmode",
+      "repo-2::knowledge_operatingmanual"
+    ],
+    "6": [
+      "docs_prd",
+      "docs_prd_1_storage_portable_security_layer",
+      "docs_prd_2_dump_analysis_byte_offset_indexer",
+      "docs_prd_3_execution_engine_on_the_fly_stream_filtering",
+      "docs_prd_4_progress_tracking_graceful_cancellation",
+      "docs_prd_technical_blueprint_portable_mariadb_restore_backup_tool_go_wails"
+    ],
+    "7": [
+      "repo::knowledge_coding_mode_implementation",
+      "repo::knowledge_coding_rules_go_react_wails",
+      "repo::knowledge_file_size_limit_summary",
+      "repo::knowledge_step_0_5_understand_before_touching",
+      "repo::knowledge_step_0_activate_ponytail_first",
+      "repo::knowledge_step_last_verify_close_out"
+    ],
+    "8": [
+      "repo::docs_coding_rules",
+      "repo::docs_coding_rules_1_before_starting_claim_it",
+      "repo::docs_coding_rules_2_do_the_work",
+      "repo::docs_coding_rules_3_after_finishing_close_issue_update_checklist",
+      "repo::docs_coding_rules_4_finalization_commit_push",
+      "repo::docs_coding_rules_coding_rules_go_react_wails",
+      "repo::docs_coding_rules_file_size_limit_hard_ceiling",
+      "repo::docs_coding_rules_go",
+      "repo::docs_coding_rules_react_typescript_wails_frontend",
+      "repo::docs_coding_rules_verification_before_finishing",
+      "repo::docs_coding_rules_working_from_a_claim_order_checklist_beads_md"
+    ],
+    "9": [
+      "repo-2::docs_coding_rules_contextfirstgo",
+      "repo-2::docs_coding_rules_goroutinehygiene"
+    ],
+    "10": [
+      "repo-2::docs_coding_rules_localfirststate",
+      "repo-2::docs_coding_rules_typescriptstrict"
+    ],
+    "11": [
+      "repo-2::docs_coding_rules_effectcleanup"
+    ],
+    "12": [
+      "repo-2::docs_coding_rules_goerrorwrapping"
+    ],
+    "13": [
+      "repo::docs_blueprint",
+      "repo::docs_blueprint_1_storage_portable_security_layer",
+      "repo::docs_blueprint_2_dump_analysis_byte_offset_indexer",
+      "repo::docs_blueprint_3_execution_engine_on_the_fly_stream_filtering",
+      "repo::docs_blueprint_4_progress_tracking_graceful_cancellation",
+      "repo::docs_blueprint_technical_blueprint_portable_mariadb_restore_backup_tool_go_wails"
+    ],
+    "14": [
+      "repo-2::docs_coding_rules_tabledriventests"
+    ]
+  },
+  "cohesion": {
+    "0": 0.13333333333333333,
+    "1": 0.14285714285714285,
+    "2": 0.16666666666666666,
+    "3": 0.18181818181818182,
+    "4": 0.2,
+    "5": 0.25,
+    "6": 0.3333333333333333,
+    "7": 0.3333333333333333,
+    "8": 0.18181818181818182,
+    "9": 1.0,
+    "10": 1.0,
+    "11": 1.0,
+    "12": 1.0,
+    "13": 0.3333333333333333,
+    "14": 1.0
+  },
+  "gods": [
+    {
+      "id": "repo-2::knowledge_graphify",
+      "label": "Graphify",
+      "degree": 8
+    },
+    {
+      "id": "claude_project_instructions_for_ai_agents",
+      "label": "Project Instructions for AI Agents",
+      "degree": 7
+    },
+    {
+      "id": "agents_agent_instructions",
+      "label": "Agent Instructions",
+      "degree": 6
+    },
+    {
+      "id": "repo::knowledge_knowledge_agent_operating_manual",
+      "label": "Knowledge — Agent Operating Manual",
+      "degree": 6
+    },
+    {
+      "id": "repo::docs_coding_rules_coding_rules_go_react_wails",
+      "label": "Coding Rules — Go + React (Wails)",
+      "degree": 6
+    },
+    {
+      "id": "claude_gitnexus_code_intelligence",
+      "label": "GitNexus — Code Intelligence",
+      "degree": 5
+    },
+    {
+      "id": "agents_gitnexus_code_intelligence",
+      "label": "GitNexus — Code Intelligence",
+      "degree": 5
+    },
+    {
+      "id": "repo::docs_blueprint_technical_blueprint_portable_mariadb_restore_backup_tool_go_wails",
+      "label": "🛠️ Technical Blueprint: Portable MariaDB Restore & Backup Tool (Go + Wails)",
+      "degree": 5
+    },
+    {
+      "id": "docs_prd_technical_blueprint_portable_mariadb_restore_backup_tool_go_wails",
+      "label": "🛠️ Technical Blueprint: Portable MariaDB Restore & Backup Tool (Go + Wails)",
+      "degree": 5
+    },
+    {
+      "id": "repo::knowledge_coding_mode_implementation",
+      "label": "Coding Mode — Implementation",
+      "degree": 5
+    }
+  ],
+  "surprises": [
+    {
+      "source": "Graphify Affected",
+      "target": "Graphify",
+      "source_files": [
+        "docs/graphify-commands.md",
+        "knowledge.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Graphify Affected` unexpectedly reaches hub `Graphify`"
+    },
+    {
+      "source": "Graphify Explain",
+      "target": "Graphify",
+      "source_files": [
+        "docs/graphify-commands.md",
+        "knowledge.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Graphify Explain` unexpectedly reaches hub `Graphify`"
+    },
+    {
+      "source": "Graphify MCP Server",
+      "target": "Graphify",
+      "source_files": [
+        "docs/graphify-commands.md",
+        "knowledge.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Graphify MCP Server` unexpectedly reaches hub `Graphify`"
+    },
+    {
+      "source": "Graphify Path",
+      "target": "Graphify",
+      "source_files": [
+        "docs/graphify-commands.md",
+        "knowledge.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Graphify Path` unexpectedly reaches hub `Graphify`"
+    },
+    {
+      "source": "Graphify Query",
+      "target": "Graphify",
+      "source_files": [
+        "docs/graphify-commands.md",
+        "knowledge.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories; peripheral node `Graphify Query` unexpectedly reaches hub `Graphify`"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `Knowledge — Agent Operating Manual` connect `Knowledge — Agent Operating Manual` to `Coding Mode — Implementation`?",
+      "why": "High betweenness centrality (0.019) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Coding Mode — Implementation` connect `Coding Mode — Implementation` to `Knowledge — Agent Operating Manual`?",
+      "why": "High betweenness centrality (0.012) - this node is a cross-community bridge."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 5 inferred relationships involving `Graphify` (e.g. with `Graphify Affected` and `Graphify Explain`) actually correct?",
+      "why": "`Graphify` has 5 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `Always Do`, `Architecture Overview`, `Build & Test` to the rest of the system?",
+      "why": "70 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Project Instructions for AI Agents` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Agent Instructions` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

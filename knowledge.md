@@ -8,6 +8,16 @@ This file defines **how agents work in this project**. Read it fully before star
 - **Issue tracker:** beads (`bd`) — see AGENTS.md for the full workflow, session-completion protocol, and the "ALWAYS use non-interactive flags" shell rules.
 - **Code intelligence:** graphify + gitnexus (see below). Output dirs: `graphify-out/`, `.gitnexus/`.
 
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in beads (`bd`), a git-native tracker in a local Dolt DB. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context — one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
 ## Modes
 
 Two modes of working. Detect yours, then follow its rules strictly.

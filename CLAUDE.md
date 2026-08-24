@@ -11,6 +11,16 @@ This file provides instructions and context for AI coding agents working on this
 
 `knowledge.md` also specifies how to explore code (graphify & gitnexus first, `cat`/`grep`/`ls` as fallback).
 
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in beads (`bd`), a git-native tracker in a local Dolt DB. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context — one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 ## Beads Issue Tracker
 

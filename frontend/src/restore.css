@@ -1,0 +1,145 @@
+/* Restore Panel */
+.restore-panel {
+    max-width: 800px;
+}
+
+.restore-file-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.restore-file-row input {
+    flex: 1;
+    padding: 0.5rem;
+    background: #1a1a2e;
+    border: 1px solid #0f3460;
+    border-radius: 4px;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+}
+
+.restore-file-row input:focus {
+    outline: none;
+    border-color: #e94560;
+}
+
+/* Progress bar */
+.scan-progress {
+    margin: 1rem 0;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #0f3460;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #e94560;
+    transition: width 0.15s ease;
+    border-radius: 4px;
+}
+
+.progress-stats {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+/* Catalog checklist */
+.catalog-checklist {
+    margin-top: 1rem;
+    border: 1px solid #0f3460;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.checklist-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: #16213e;
+    border-bottom: 1px solid #0f3460;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.db-group {
+    border-bottom: 1px solid #0f3460;
+}
+
+.db-group:last-child {
+    border-bottom: none;
+}
+
+.db-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #16213e;
+    cursor: pointer;
+}
+
+.db-header input[type="checkbox"] {
+    accent-color: #e94560;
+}
+
+.db-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.db-count {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.db-objects {
+    padding: 0.25rem 0;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 1rem 0.35rem 2rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.checklist-item:hover {
+    background: #0f3460;
+}
+
+.checklist-item input[type="checkbox"] {
+    accent-color: #e94560;
+}
+
+.obj-name {
+    flex: 1;
+}
+
+.obj-type {
+    color: #888;
+    font-style: italic;
+    flex: 1;
+}
+
+.obj-bytes {
+    color: #666;
+    font-size: 0.8rem;
+    font-family: monospace;
+}
+
+.block-item {
+    cursor: default;
+}
+
+.block-item:hover {
+    background: none;
+}

@@ -1,0 +1,169 @@
+/* Servers Panel */
+.servers-panel {
+    display: flex;
+    gap: 0;
+    padding: 0;
+    height: calc(100vh - 2rem);
+}
+
+/* Profile List */
+.profile-list {
+    width: 260px;
+    background: #16213e;
+    border-right: 1px solid #0f3460;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.profile-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #0f3460;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.profile-list-items {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.profile-list-empty {
+    padding: 2rem 1rem;
+    color: #666;
+    text-align: center;
+    font-style: italic;
+}
+
+.profile-list-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #0f3460;
+    color: #ccc;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+}
+
+.profile-list-item:hover {
+    background: #0f3460;
+}
+
+.profile-list-item.selected {
+    background: #0f3460;
+    border-left: 3px solid #e94560;
+}
+
+.profile-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.profile-host {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 0.15rem;
+}
+
+/* Profile Form */
+.profile-form {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.profile-form-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}
+
+.form-row {
+    margin-bottom: 0.75rem;
+}
+
+.form-row label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.form-row input,
+.form-row select {
+    width: 100%;
+    padding: 0.5rem;
+    background: #1a1a2e;
+    border: 1px solid #0f3460;
+    border-radius: 4px;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+    outline: none;
+    border-color: #e94560;
+}
+
+.form-row-inline {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.form-field {
+    flex: 1;
+}
+
+.form-field-small {
+    flex: 0 0 120px;
+}
+
+.ssl-section {
+    border: 1px solid #0f3460;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.ssl-section legend {
+    padding: 0 0.5rem;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #0f3460;
+}
+
+.test-result {
+    margin-top: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.test-result.success {
+    background: #0a3d0a;
+    border: 1px solid #2d7a2d;
+    color: #8fdf8f;
+}
+
+.test-result.error {
+    background: #3d0a0a;
+    border: 1px solid #7a2d2d;
+    color: #fd8f8f;
+}

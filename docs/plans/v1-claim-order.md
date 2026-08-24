@@ -9,7 +9,7 @@ Tick the box when claimed; mark ✅ when closed.
 
 ## Wave 1 — Must be first (blocks everything)
 
-- [ ] `mariadb-restore-desktop-app-gco` — Bootstrap: Wails v2 app shell, SQLite+AES-GCM, Smart Recovery, sidebar scaffold — **can start immediately**
+- [x] `mariadb-restore-desktop-app-gco` — Bootstrap: Wails v2 app shell, SQLite+AES-GCM, Smart Recovery, sidebar scaffold — ✅ closed
 
 ---
 
@@ -17,10 +17,10 @@ Tick the box when claimed; mark ✅ when closed.
 
 All four can be claimed simultaneously by different agents once `gco` is closed.
 
-- [ ] `mariadb-restore-desktop-app-yiq` — Server Profile CRUD with SSL config — blocked by: `gco`
-- [ ] `mariadb-restore-desktop-app-q45` — Settings page: mariadb binary path config and auto-discovery — blocked by: `gco`
+- [x] `mariadb-restore-desktop-app-yiq` — Server Profile CRUD with SSL config — claimed
+- [x] `mariadb-restore-desktop-app-q45` — Settings page: mariadb binary path config and auto-discovery — claimed
 - [ ] `mariadb-restore-desktop-app-z3o` — Distribution: bundle mariadb binaries, Windows zip, Linux AppImage — blocked by: `gco`
-- [ ] `mariadb-restore-desktop-app-pzn` — Byte-Offset Scanner: single-pass catalog population with Analyze UX — blocked by: `gco`
+- [x] `mariadb-restore-desktop-app-pzn` — Byte-Offset Scanner: single-pass catalog population with Analyze UX — claimed
 
 ---
 

@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
-import {Init, InitFresh, Recover, ResetAndInit} from '../wailsjs/go/main/App';
+import {Init, InitFresh, ResetAndInit} from '../wailsjs/go/main/App';
+import {Quit} from '../wailsjs/runtime/runtime';
 import {main} from '../wailsjs/go/models';
 import './App.css';
 import './servers.css';
@@ -14,29 +15,44 @@ export type Panel = 'servers' | 'backup' | 'restore' | 'settings';
 
 function App() {
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [showRecovery, setShowRecovery] = useState(false);
     const [activePanel, setActivePanel] = useState<Panel>('servers');
 
-    useEffect(() => {
-        Init().then((result: main.InitResult) => {
+    const startApp = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const result = await Init();
             switch (result.status) {
                 case 'ready':
                     setLoading(false);
                     break;
                 case 'fresh':
-                    InitFresh().then(() => setLoading(false)).catch(console.error);
+                    await InitFresh();
+                    setLoading(false);
                     break;
                 case 'needs_recovery':
                     setShowRecovery(true);
                     setLoading(false);
                     break;
+                default:
+                    setLoading(false);
+                    break;
             }
-        }).catch(console.error);
+        } catch (err: unknown) {
+            console.error('Initialization failed:', err);
+            setError(String(err));
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        startApp();
     }, []);
 
-    async function handleRecover() {
-        await Recover();
-        setShowRecovery(false);
+    function handleCancel() {
+        Quit();
     }
 
     async function handleReset() {
@@ -46,6 +62,16 @@ function App() {
 
     if (loading) {
         return <div className="loading">Initializing…</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="loading" style={{flexDirection: 'column', gap: '1rem'}}>
+                <div style={{fontSize: '1.2rem', color: '#e94560'}}>Initialization Error</div>
+                <div style={{color: '#aaa', maxWidth: '400px', textAlign: 'center'}}>{error}</div>
+                <button className="btn btn-primary" onClick={startApp}>Retry</button>
+            </div>
+        );
     }
 
     return (
@@ -58,7 +84,7 @@ function App() {
                 {activePanel === 'settings' && <SettingsPanel/>}
             </main>
             {showRecovery && (
-                <SmartRecoveryModal onRecover={handleRecover} onReset={handleReset}/>
+                <SmartRecoveryModal onCancel={handleCancel} onReset={handleReset}/>
             )}
         </div>
     );

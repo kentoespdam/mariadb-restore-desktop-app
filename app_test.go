@@ -47,6 +47,17 @@ func TestInitReady(t *testing.T) {
 	if result.Status != "ready" {
 		t.Fatalf("status = %q, want ready", result.Status)
 	}
+
+	// The app must have its DB opened and keyData loaded so that subsequent operations work!
+	if app.db == nil {
+		t.Fatal("expected app.db to be initialized on ready status")
+	}
+	if app.keyData == nil {
+		t.Fatal("expected app.keyData to be loaded on ready status")
+	}
+	if _, err := app.ListProfiles(); err != nil {
+		t.Fatalf("ListProfiles failed on ready app: %v", err)
+	}
 }
 
 func TestInitNeedsRecovery(t *testing.T) {

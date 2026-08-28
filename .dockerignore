@@ -1,0 +1,42 @@
+# Build output
+build/bin/
+frontend/dist/
+frontend/node_modules/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Wails dev cache
+frontend/.vite/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# App data
+.freebuff/
+.beads/
+
+# Docs / agent configs
+AGENTS.md
+CLAUDE.md
+CONTEXT.md
+knowledge.md
+docs/
+.agents/
+.claude/
+.freebuff/
+.graphifyignore
+.graphifyout/
+.gitnexus/
+.gitnexusignore
+graphify-out/
+skills-lock.json

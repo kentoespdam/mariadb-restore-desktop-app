@@ -147,8 +147,16 @@ func DecryptPassword(k, encrypted []byte) (string, error) {
 	return string(plain), nil
 }
 
-// TestConnection attempts to connect to the MariaDB server using the mariadb CLI.
+// TestConnection attempts to connect to the MariaDB server using the default mariadb CLI.
 func TestConnection(ctx context.Context, p *Profile, password string) TestResult {
+	return TestConnectionWithBinary(ctx, "mariadb", p, password)
+}
+
+// TestConnectionWithBinary attempts to connect to the MariaDB server using the specified binary path.
+func TestConnectionWithBinary(ctx context.Context, bin string, p *Profile, password string) TestResult {
+	if bin == "" {
+		bin = "mariadb"
+	}
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
@@ -157,13 +165,25 @@ func TestConnection(ctx context.Context, p *Profile, password string) TestResult
 		"-P", fmt.Sprintf("%d", p.Port),
 		"-u", p.Username,
 		"--connect-timeout=5",
-		"-e", "SELECT VERSION()",
 	}
 	if password != "" {
-		args = append([]string{"-p" + password}, args...)
+		args = append(args, "-p"+password)
 	}
+	if p.SSLMode != "" && p.SSLMode != "disabled" {
+		args = append(args, "--ssl-mode="+p.SSLMode)
+		if p.SSLCA != "" {
+			args = append(args, "--ssl-ca="+p.SSLCA)
+		}
+		if p.SSLCert != "" {
+			args = append(args, "--ssl-cert="+p.SSLCert)
+		}
+		if p.SSLKey != "" {
+			args = append(args, "--ssl-key="+p.SSLKey)
+		}
+	}
+	args = append(args, "-e", "SELECT VERSION()")
 
-	cmd := exec.CommandContext(ctx, "mariadb", args...)
+	cmd := exec.CommandContext(ctx, bin, args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		msg := strings.TrimSpace(string(out))

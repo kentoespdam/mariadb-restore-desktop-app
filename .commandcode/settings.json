@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(cd D:\\golang\\mariadb-restore-desktop-app && dir /B 2>nul)",
+      "Shell(if:*)",
+      "Shell(else:*)",
+      "Shell(make:*)",
+      "Shell(tee:*)",
+      "Shell(which wails go node npm 2>&1; echo \"---\"; go version 2>&1; node --version 2>&1; npm --version 2>&1; wails version 2>&1; echo \"---GOPATH---\"; go env GOPATH 2>&1; ls \"$(go env GOPATH)/bin\" 2>&1 | head -20)",
+      "Shell(ls frontend/ 2>&1; echo \"---\"; ls frontend/node_modules/ 2>&1 | head -10; echo \"---\"; cat frontend/package.json 2>&1 | head -50)",
+      "Shell(ls -la $(go env GOPATH)/bin 2>&1; echo \"---PATH---\"; echo $PATH; echo \"---which wails via go bin---\"; ls /home/dev/go/bin 2>&1)",
+      "Shell(go:*)",
+      "Shell(ls:*)",
+      "Shell(find:*)",
+      "Shell(~/go/bin/wails:*)",
+      "Shell(wails:*)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}

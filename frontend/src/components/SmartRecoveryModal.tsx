@@ -1,9 +1,9 @@
 interface SmartRecoveryModalProps {
-    onRecover: () => void;
+    onCancel: () => void;
     onReset: () => void;
 }
 
-export function SmartRecoveryModal({onRecover, onReset}: SmartRecoveryModalProps) {
+export function SmartRecoveryModal({onCancel, onReset}: SmartRecoveryModalProps) {
     return (
         <div className="modal-overlay">
             <div className="modal">
@@ -14,7 +14,7 @@ export function SmartRecoveryModal({onRecover, onReset}: SmartRecoveryModalProps
                 </p>
                 <p>How would you like to proceed?</p>
                 <div className="modal-actions">
-                    <button className="btn btn-secondary" onClick={onRecover}>
+                    <button className="btn btn-secondary" onClick={onCancel}>
                         Cancel — I'll recover the key
                     </button>
                     <button className="btn btn-danger" onClick={onReset}>

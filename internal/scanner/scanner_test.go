@@ -278,3 +278,43 @@ func TestParseCreateTable(t *testing.T) {
 		}
 	}
 }
+
+const testDumpSingleDB = `-- MariaDB dump 10.19  Distrib 10.11.6-MariaDB, for debian-linux-gnu (x86_64)
+--
+-- Host: localhost    Database: my_single_db
+-- ------------------------------------------------------
+-- Server version	10.11.6-MariaDB
+
+DROP TABLE IF EXISTS ` + "`customers`" + `;
+CREATE TABLE ` + "`customers`" + ` (
+  ` + "`id`" + ` int(11) NOT NULL,
+  ` + "`name`" + ` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB;
+
+INSERT INTO ` + "`customers`" + ` VALUES (1,'John Doe');
+`
+
+func TestScanSingleDBWithoutUseStatement(t *testing.T) {
+	db := setupTestDB(t)
+	dir := t.TempDir()
+	dumpPath := writeDump(t, dir, "singledb.sql", testDumpSingleDB)
+
+	var lastProgress Progress
+	err := Scan(context.Background(), db, dumpPath, func(p Progress) {
+		lastProgress = p
+	})
+	if err != nil {
+		t.Fatalf("Scan: %v", err)
+	}
+
+	if lastProgress.TablesFound != 1 {
+		t.Fatalf("tables found = %d, want 1", lastProgress.TablesFound)
+	}
+
+	var count int
+	db.QueryRow("SELECT COUNT(*) FROM catalog_objects WHERE dump_file=? AND object_type='table'", dumpPath).Scan(&count)
+	if count != 1 {
+		t.Fatalf("catalog table count = %d, want 1", count)
+	}
+}
+

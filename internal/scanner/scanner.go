@@ -123,6 +123,12 @@ func Scan(ctx context.Context, db *sql.DB, dumpFile string, onProgress func(Prog
 		trimmed := strings.TrimSpace(currentLine)
 		upper := strings.ToUpper(trimmed)
 
+		// Detect database in comments (e.g. "-- Host: ... Database: dbname")
+		if dbName := parseDatabaseComment(trimmed); dbName != "" && activeDB == "" {
+			activeDB = dbName
+			dbs[dbName] = true
+		}
+
 		// Detect USE dbname;
 		if strings.HasPrefix(upper, "USE ") && strings.HasSuffix(upper, ";") {
 			dbName := extractUseDB(trimmed)
@@ -153,7 +159,11 @@ func Scan(ctx context.Context, db *sql.DB, dumpFile string, onProgress func(Prog
 		}
 
 		// Detect CREATE TABLE
-		if objType, tableName := parseCreateTable(upper); objType != "" && activeDB != "" {
+		if objType, tableName := parseCreateTable(upper); objType != "" {
+			if activeDB == "" {
+				activeDB = "default"
+				dbs[activeDB] = true
+			}
 			if currentObj != nil {
 				currentObj.EndByte = offset
 				flushObj(stmt, currentObj)
@@ -222,76 +232,3 @@ func flushObj(stmt *sql.Stmt, obj *CatalogObject) {
 	stmt.Exec(obj.DumpFile, obj.DatabaseName, obj.ObjectType, obj.ObjectName, obj.StartByte, obj.EndByte)
 }
 
-// extractUseDB extracts the database name from "USE dbname;"
-func extractUseDB(line string) string {
-	s := strings.TrimSpace(line)
-	upper := strings.ToUpper(s)
-	if !strings.HasPrefix(upper, "USE ") {
-		return ""
-	}
-	s = s[4:] // strip "USE " (4 chars)
-	s = strings.TrimSpace(s)
-	s = strings.TrimSuffix(s, ";")
-	s = strings.TrimSpace(s)
-	s = strings.Trim(s, "`\"'")
-	return s
-}
-
-// parseCreateTable detects "CREATE TABLE `dbname`.`tablename"` or "CREATE TABLE tablename"
-func parseCreateTable(upper string) (objType, name string) {
-	if !strings.HasPrefix(upper, "CREATE TABLE") {
-		return "", ""
-	}
-	// Skip CREATE TABLE IF NOT EXISTS
-	s := upper
-	s = strings.ReplaceAll(s, "CREATE TABLE IF NOT EXISTS", "CREATE TABLE")
-	s = strings.TrimSpace(s)
-	s = strings.TrimPrefix(s, "CREATE TABLE")
-	s = strings.TrimSpace(s)
-	// Remove backticks
-	s = strings.ReplaceAll(s, "`", "")
-	s = strings.Trim(s, " \t")
-	// Remove trailing (...
-	if idx := strings.Index(s, "("); idx > 0 {
-		s = s[:idx]
-	}
-	// Remove trailing semicolon
-	s = strings.TrimSuffix(s, ";")
-	// Remove schema prefix
-	if idx := strings.Index(s, "."); idx > 0 {
-		s = s[idx+1:]
-	}
-	s = strings.TrimSpace(s)
-	s = strings.Trim(s, "\"'")
-	if s == "" {
-		return "", ""
-	}
-	return TypeTable, strings.ToLower(s)
-}
-
-// parseBlockMarker detects "-- Dumped routines/triggers/events for database `dbname`"
-// Returns the object type and the database name extracted from the comment.
-func parseBlockMarker(line string) (objType, dbName string) {
-	lower := strings.ToLower(line)
-	var prefix string
-	switch {
-	case strings.Contains(lower, "-- dumped routines for database"):
-		objType = TypeRoutines
-		prefix = "-- dumped routines for database"
-	case strings.Contains(lower, "-- dumped triggers for database"):
-		objType = TypeTriggers
-		prefix = "-- dumped triggers for database"
-	case strings.Contains(lower, "-- dumped events for database"):
-		objType = TypeEvents
-		prefix = "-- dumped events for database"
-	default:
-		return "", ""
-	}
-	// Extract DB name after the prefix
-	suffix := line[len(prefix):]
-	suffix = strings.TrimSpace(suffix)
-	suffix = strings.TrimSuffix(suffix, ";")
-	suffix = strings.TrimSpace(suffix)
-	suffix = strings.Trim(suffix, "`\"'")
-	return objType, suffix
-}

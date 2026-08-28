@@ -53,6 +53,9 @@ func (a *App) Init() InitResult {
 
 	switch {
 	case keyExists && catalogExists:
+		if err := a.Recover(); err != nil {
+			return InitResult{Status: "needs_recovery", KeyExists: keyExists, CatalogExists: catalogExists}
+		}
 		return InitResult{Status: "ready", KeyExists: true, CatalogExists: true}
 	case !keyExists && catalogExists:
 		return InitResult{Status: "needs_recovery", KeyExists: false, CatalogExists: true}
@@ -139,11 +142,16 @@ func (a *App) DeleteProfile(id int64) error {
 
 // TestConnection tests a MariaDB connection.
 func (a *App) TestConnection(p *profile.Profile) profile.TestResult {
-	pw, _ := profile.DecryptPassword(a.keyData, p.EncryptedPassword)
-	if pw == "" {
-		pw = p.Password
+	pw := p.Password
+	if pw == "" && p.ID > 0 && a.db != nil {
+		if stored, err := profile.GetProfile(a.db, p.ID); err == nil {
+			if dec, err := profile.DecryptPassword(a.keyData, stored.EncryptedPassword); err == nil {
+				pw = dec
+			}
+		}
 	}
-	return profile.TestConnection(a.ctx, p, pw)
+	bin := settings.ResolveMariaDB(a.db, a.dir)
+	return profile.TestConnectionWithBinary(a.ctx, bin, p, pw)
 }
 
 // GetProfile returns a single profile by ID.

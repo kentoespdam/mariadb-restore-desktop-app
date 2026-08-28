@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {profile} from '../../wailsjs/go/models';
 import {TestConnection, SaveProfile, DeleteProfile} from '../../wailsjs/go/main/App';
 
@@ -17,12 +17,10 @@ export function ProfileForm({profile: p, onSaved, onDeleted}: ProfileFormProps) 
     const [saving, setSaving] = useState(false);
 
     // Sync when selected profile changes
-    const prevId = useState(p?.id);
-    if (p && p.id !== prevId[0]) {
-        prevId[0] = p.id;
-        setForm({...p});
+    useEffect(() => {
+        setForm(p ? {...p} : new profile.Profile());
         setTestResult(null);
-    }
+    }, [p]);
 
     function update(field: keyof profile.Profile, value: string | number) {
         setForm((f) => ({...f, [field]: value}));

@@ -22,4 +22,4 @@ build:
 	wails build -tags webkit2_41
 
 dev:
-	env -u LD_LIBRARY_PATH -u LD_PRELOAD wails dev -tags webkit2_41
+	LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu LD_PRELOAD= wails dev -tags webkit2_41

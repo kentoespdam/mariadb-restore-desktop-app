@@ -86,4 +86,12 @@ describe('App', () => {
       unmount();
     }
   });
+
+  it('falls back to Dashboard for an unknown route', async () => {
+    window.location.hash = '#/does-not-exist';
+    const { getByText } = render(<App />);
+    await waitFor(() => {
+      expect(getByText(/No server profiles yet/i)).toBeInTheDocument();
+    });
+  });
 });

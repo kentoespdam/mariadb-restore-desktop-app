@@ -6,7 +6,7 @@ Per `knowledge.md` grill mode this plan ships only docs + beads issues. Implemen
 
 ## Foundation (no blockers)
 
-- [ ] bd-aci — FE-01 useWailsEvent subscription hook — can start immediately
+- [x] bd-aci — FE-01 useWailsEvent subscription hook — ✅ closed
 - [ ] bd-94m — FE-02 API module layer + typed stubs — can start immediately
 
 ## Screens & modal (after foundation)

@@ -53,10 +53,16 @@ afterEach(() => {
   window.location.hash = '';
 });
 
-const restoreButton = (root: HTMLElement) =>
-  root.querySelector<HTMLButtonElement>('button[data-action="restore"]')!;
-const analyzeButton = (root: HTMLElement) =>
-  root.querySelector<HTMLButtonElement>('button[data-action="analyze"]')!;
+const restoreButton = (root: HTMLElement) => {
+  const el = root.querySelector<HTMLButtonElement>('button[data-action="restore"]');
+  if (!el) throw new Error('restore button not found');
+  return el;
+};
+const analyzeButton = (root: HTMLElement) => {
+  const el = root.querySelector<HTMLButtonElement>('button[data-action="analyze"]');
+  if (!el) throw new Error('analyze button not found');
+  return el;
+};
 
 describe('Restore', () => {
   it('renders the form with both action buttons', async () => {

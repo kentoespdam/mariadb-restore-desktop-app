@@ -16,7 +16,7 @@ Per `knowledge.md` grill mode this plan ships only docs + beads issues. Implemen
 - [x] bd-m34 — FE-05 Backup screen — ✅ closed
 - [x] bd-8ks — FE-06 Restore entry + Full restore — ✅ closed
 - [x] bd-33h — FE-07 Analyze + Object Selection grid (Partial Restore) — ✅ closed
-- [ ] bd-el0 — FE-08 Settings screen — blocked by: FE-01, FE-02, FE-03
+- [x] bd-el0 — FE-08 Settings screen — ✅ closed
 
 ## Assembly
 

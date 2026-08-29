@@ -11,7 +11,7 @@ Per `knowledge.md` grill mode this plan ships only docs + beads issues. Implemen
 
 ## Screens & modal (after foundation)
 
-- [ ] bd-070 — FE-03 Smart Recovery Dialog (global) — blocked by: FE-01, FE-02
+- [x] bd-070 — FE-03 Smart Recovery Dialog (global) — ✅ closed
 - [ ] bd-que — FE-04 Dashboard screen — blocked by: FE-02
 - [ ] bd-m34 — FE-05 Backup screen — blocked by: FE-01, FE-02
 - [ ] bd-8ks — FE-06 Restore entry + Full restore — blocked by: FE-01, FE-02

@@ -1,9 +1,6 @@
 import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/Button';
 import {
   CreateServerProfile,
   DeleteServerProfile,
@@ -12,6 +9,9 @@ import {
 import type { profile } from '../../../wailsjs/go/models';
 
 type View = profile.View;
+
+const inputClass =
+  'bg-slate-900 border-slate-700 h-9 rounded-md border px-3 py-1 text-sm text-white w-full';
 
 export function Profiles() {
   const [views, setViews] = useState<View[]>([]);
@@ -73,68 +73,78 @@ export function Profiles() {
       </p>
       {err && <p className="mt-3 text-red-400 text-sm">{err}</p>}
 
-      <Card className="mt-6 max-w-2xl bg-slate-800 border-slate-700">
-        <CardHeader>
-          <CardTitle>Add profile</CardTitle>
-          <CardDescription>Connection credentials for a MariaDB server.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
+      <div className="mt-6 max-w-2xl bg-slate-800 border-slate-700 rounded-lg p-6 space-y-4">
+        <div>
+          <h3 className="font-semibold">Add profile</h3>
+          <p className="text-sm text-slate-400">Connection credentials for a MariaDB server.</p>
+        </div>
+        <div className="grid gap-4">
           <div className="grid gap-1.5">
-            <Label htmlFor="name">Name</Label>
-            <Input
+            <label htmlFor="name" className="text-sm text-slate-300">
+              Name
+            </label>
+            <input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="bg-slate-900 border-slate-700"
+              className={inputClass}
             />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="grid gap-1.5 col-span-2">
-              <Label htmlFor="host">Host</Label>
-              <Input
+              <label htmlFor="host" className="text-sm text-slate-300">
+                Host
+              </label>
+              <input
                 id="host"
                 value={host}
                 onChange={(e) => setHost(e.target.value)}
-                className="bg-slate-900 border-slate-700"
+                className={inputClass}
               />
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="port">Port</Label>
-              <Input
+              <label htmlFor="port" className="text-sm text-slate-300">
+                Port
+              </label>
+              <input
                 id="port"
                 type="number"
                 value={port}
                 onChange={(e) => setPort(Number(e.target.value))}
-                className="bg-slate-900 border-slate-700"
+                className={inputClass}
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">
-              <Label htmlFor="user">User</Label>
-              <Input
+              <label htmlFor="user" className="text-sm text-slate-300">
+                User
+              </label>
+              <input
                 id="user"
                 value={user}
                 onChange={(e) => setUser(e.target.value)}
-                className="bg-slate-900 border-slate-700"
+                className={inputClass}
               />
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="password">Password</Label>
-              <Input
+              <label htmlFor="password" className="text-sm text-slate-300">
+                Password
+              </label>
+              <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-slate-900 border-slate-700"
+                className={inputClass}
               />
             </div>
           </div>
           <Button onClick={onCreate} className="self-start">
             Add profile
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <table className="mt-8 w-full max-w-2xl text-sm">
         <thead>

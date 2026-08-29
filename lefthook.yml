@@ -1,0 +1,9 @@
+pre-commit:
+  parallel: true
+  commands:
+    frontend-lint:
+      glob: "src/frontend/src/*.{ts,tsx,js,jsx,json}"
+      run: npx biome check {staged_files}
+    backend-lint:
+      glob: "*.go"
+      run: go vet ./...

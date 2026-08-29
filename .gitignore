@@ -4,6 +4,12 @@
 *.db
 .beads-credential-key
 
+# Local app data (Portable Scope — never commit)
+app.key
+catalog.sqlite
+catalog.sqlite-shm
+catalog.sqlite-wal
+
 # App data (Freebuff desktop database)
 .freebuff
 
@@ -39,6 +45,9 @@ frontend/dist/
 frontend/wailsjs/
 # TypeScript incremental build cache
 *.tsbuildinfo
+# Vite TS-emit leftovers (vite v7 emits .d.ts and .js alongside vite.config.ts)
+src/frontend/vite.config.js
+src/frontend/vite.config.d.ts
 # Local env / logs
 *.local
 npm-debug.log*

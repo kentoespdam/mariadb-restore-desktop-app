@@ -1,0 +1,22 @@
+run:
+  timeout: 5m
+
+linters:
+  disable-all: true
+  enable:
+    - govet
+    - errcheck
+    - goimports
+    - ineffassign
+    - unused
+    - misspell
+    - staticcheck
+
+issues:
+  exclude-dirs:
+    - src/frontend
+    - build
+
+linters-settings:
+  misspell:
+    locale: US

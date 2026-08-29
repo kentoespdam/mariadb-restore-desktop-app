@@ -6,6 +6,7 @@
   "frontend:build": "npm --prefix src/frontend run build",
   "frontend:dev:watcher": "npm --prefix src/frontend run dev",
   "frontend:dev:serverUrl": "auto",
+  "wailsjsdir": "./src/frontend",
   "author": {
     "name": "Bagus Pdam",
     "email": "kentoes.pdam@gmail.com"

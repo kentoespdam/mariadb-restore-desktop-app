@@ -31,6 +31,7 @@ function Page({ path }: { path: string }) {
       return <SettingsPage />;
     case '/dashboard':
     case '/':
+      return <Dashboard />;
     default:
       return <Dashboard />;
   }

@@ -22,7 +22,7 @@ Per `knowledge.md` grill mode this plan ships only docs + beads issues. Implemen
 
 - [x] bd-6ar — FE-09 App routing expansion — ✅ closed
 - [x] bd-8xe — FE-10 Tests for new screens — ✅ closed
-- [ ] bd-a8h — FE-11 Verification + cleanup — blocked by: FE-10
+- [x] bd-a8h — FE-11 Verification + cleanup — ✅ closed
 
 ## Notes for claimers
 

@@ -48,6 +48,12 @@ frontend/wailsjs/
 # Vite TS-emit leftovers (vite v7 emits .d.ts and .js alongside vite.config.ts)
 src/frontend/vite.config.js
 src/frontend/vite.config.d.ts
+# Vitest config TS-emit (we use vitest.config.mjs; .d.ts still gets emitted)
+src/frontend/vitest.config.d.ts
+# tsc -b incremental output dir for the referenced project (tsconfig.node.json)
+src/frontend/dist-types/
+# wails-generated hash of package.json (cache key for install decisions)
+src/frontend/package.json.md5
 # Local env / logs
 *.local
 npm-debug.log*

@@ -23,6 +23,8 @@ graphify-out/cache/
 *.out
 bin/
 build/bin/
+# Standalone build artifact produced by `wails build`
+mariadb-restore-desktop-app
 
 # ── React / TypeScript (Wails frontend) ─────────────────────────
 node_modules/
@@ -31,8 +33,12 @@ dist-ssr/
 .vite/
 coverage/
 # Generated Wails bindings + frontend build
+src/frontend/dist/
+src/frontend/wailsjs/
 frontend/dist/
 frontend/wailsjs/
+# TypeScript incremental build cache
+*.tsbuildinfo
 # Local env / logs
 *.local
 npm-debug.log*

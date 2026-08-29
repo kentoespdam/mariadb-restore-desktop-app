@@ -39,7 +39,7 @@ After Wave 1 closes, the next three can be claimed:
 
 ## Wave 0 (separate concern — do this first to scaffold the project tree)
 
-- [ ] `mariadb-restore-desktop-app-h76` — Initialize Wails v2 scaffold with `src/` layout — can start immediately. **This is the literal first step**; everything else assumes `src/backend/` and `src/frontend/` exist with the empty structure from `src/backend/ARCHITECTURE.md`. Run `wails init`, move `frontend/` → `src/frontend/`, edit `wails.json` paths, verify `wails dev` opens an empty window.
+- [x] `mariadb-restore-desktop-app-h76` — ✅ closed — Initialize Wails v2 scaffold with `src/` layout — can start immediately. **This is the literal first step**; everything else assumes `src/backend/` and `src/frontend/` exist with the empty structure from `src/backend/ARCHITECTURE.md`. Run `wails init`, move `frontend/` → `src/frontend/`, edit `wails.json` paths, verify `wails dev` opens an empty window.
 
 ---
 

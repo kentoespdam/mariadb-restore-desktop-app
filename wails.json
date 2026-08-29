@@ -1,0 +1,13 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "mariadb-restore-desktop-app",
+  "outputfilename": "mariadb-restore-desktop-app",
+  "frontend:install": "npm --prefix src/frontend install",
+  "frontend:build": "npm --prefix src/frontend run build",
+  "frontend:dev:watcher": "npm --prefix src/frontend run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Bagus Pdam",
+    "email": "kentoes.pdam@gmail.com"
+  }
+}

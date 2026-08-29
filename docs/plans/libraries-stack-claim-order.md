@@ -13,8 +13,8 @@ Tick the box when claimed; mark ✅ when closed.
 
 ## Wave 0 — Scaffold + stack pins (run sequentially)
 
-- [ ] `mariadb-restore-desktop-app-h76` — Initialize Wails v2 scaffold with `src/` layout, pinning the exact `go.mod` / `package.json` deps from ADR-0007 — can start immediately. **The first step.**
-- [ ] `mariadb-restore-desktop-app-o8a` — Tooling config: `.golangci.yml` + `biome.json` + `.editorconfig` + `lefthook.yml` — can start immediately (parallel with h76). Closes before any feature slice starts so all code lands already-linted.
+- [x] `mariadb-restore-desktop-app-h76` — ✅ closed — Initialize Wails v2 scaffold with `src/` layout, pinning the exact `go.mod` / `package.json` deps from ADR-0007 — can start immediately. **The first step.**
+- [x] `mariadb-restore-desktop-app-o8a` — claimed — Tooling config: `.golangci.yml` + `biome.json` + `.editorconfig` + `lefthook.yml` — can start immediately (parallel with h76). Closes before any feature slice starts so all code lands already-linted.
 
 After Wave 0 closes, the existing Wave 1 slices from `src-layout-bootstrap-claim-order.md` can be claimed in order.
 

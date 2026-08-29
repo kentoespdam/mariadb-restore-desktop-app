@@ -5,7 +5,12 @@
       "Shell(bd --version 2>&1; echo \"---\"; bd list --all 2>&1 | head -5)",
       "Shell(git:*)",
       "Shell(head:*)",
-      "Shell(ls:*)"
+      "Shell(ls:*)",
+      "Shell(SCRATCH=/tmp/wails-scratch/scaffold:*)",
+      "Shell(REPO=/mnt/6EEA8C7EEA8C43F5/golang/mariadb-restore-desktop-app:*)",
+      "Shell(go:*)",
+      "Shell(npm:*)",
+      "Shell(/home/dev/go/bin/wails:*)"
     ],
     "deny": [],
     "defaultMode": "default"

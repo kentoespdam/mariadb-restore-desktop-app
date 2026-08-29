@@ -9,10 +9,10 @@ import (
 // It calls onProgress (if set) for every Read; callers are expected to
 // throttle downstream events themselves.
 type ProgressReader struct {
-	src         io.Reader
-	count       atomic.Int64
-	total       int64
-	onProgress  func(soFar, total int64)
+	src        io.Reader
+	count      atomic.Int64
+	total      int64
+	onProgress func(soFar, total int64)
 }
 
 // NewProgressReader wraps src. total is reported to onProgress so the UI

@@ -134,9 +134,3 @@ func (s *Service) List() ([]View, error) {
 	}
 	return out, nil
 }
-
-// byID is a placeholder. catalog.Store keys by name, so the
-// Update/Service flow above loads by name. The real ID<->name resolver
-// is a thin query the caller should provide; for now LoadProfile is
-// keyed by name, and our service stores the ID alongside the name.
-func byID(name string) string { return name }

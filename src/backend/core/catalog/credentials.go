@@ -1,8 +1,6 @@
 package catalog
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"time"
@@ -83,9 +81,9 @@ func (s *Store) LoadProfile(name string, key []byte) (*Profile, error) {
         SELECT id, name, host, port, user, password, ssl_mode, created_at, updated_at
         FROM profiles WHERE name = ?`, name)
 	var (
-		p                                                 Profile
-		host, user, pass                                  []byte
-		created, updated                                  int64
+		p                Profile
+		host, user, pass []byte
+		created, updated int64
 	)
 	if err := row.Scan(&p.ID, &p.Name, &host, &p.Port, &user, &pass, &p.SSLMode, &created, &updated); err != nil {
 		if errors.Is(err, sqlErrNoRows()) {
@@ -150,14 +148,4 @@ func newID() (string, error) {
 
 func nowTime(unix int64) time.Time {
 	return time.Unix(unix, 0).UTC()
-}
-
-// randHex kept for callers that need a one-shot token; not used by the
-// store directly but lives here so internal helpers stay together.
-func randHex(n int) (string, error) {
-	b := make([]byte, n)
-	if _, err := rand.Read(b); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(b), nil
 }

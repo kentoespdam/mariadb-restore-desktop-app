@@ -10,8 +10,8 @@ import (
 	"os"
 	"path/filepath"
 
-	crypto "github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/crypto"
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/catalog"
+	crypto "github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/crypto"
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/features/profile"
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/features/recovery"
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/platform/events"
@@ -20,12 +20,12 @@ import (
 // App is the Wails binding target. Every public method on *App is
 // callable from the frontend via the generated bindings.
 type App struct {
-	Catalog    *catalog.Store
-	Key        []byte
-	KeyPath    string
-	CatPath    string
-	Profile    *profile.Service
-	Recovery   *RecoveryService
+	Catalog  *catalog.Store
+	Key      []byte
+	KeyPath  string
+	CatPath  string
+	Profile  *profile.Service
+	Recovery *RecoveryService
 }
 
 // RecoveryService is the Smart Recovery wiring. The Decision channel

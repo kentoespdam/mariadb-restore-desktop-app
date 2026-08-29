@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	crypto "github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/crypto"
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/catalog"
+	crypto "github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/crypto"
 )
 
 func mustSvc(t *testing.T) *Service {

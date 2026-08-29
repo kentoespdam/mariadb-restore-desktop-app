@@ -1,5 +1,5 @@
 // Package streamer assembles the restore stream: a fixed header, the
-// user-selected byte ranges, and a fixed footer — never materialising
+// user-selected byte ranges, and a fixed footer — never materializing
 // the selected data in memory.
 package streamer
 

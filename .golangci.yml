@@ -1,22 +1,37 @@
-run:
-  timeout: 5m
-
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
-    - govet
     - errcheck
-    - goimports
+    - govet
     - ineffassign
-    - unused
     - misspell
     - staticcheck
-
-issues:
-  exclude-dirs:
-    - src/frontend
-    - build
-
-linters-settings:
-  misspell:
-    locale: US
+    - unused
+  settings:
+    misspell:
+      locale: US
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - src/frontend
+      - build
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - src/frontend
+      - build
+      - third_party$
+      - builtin$
+      - examples$

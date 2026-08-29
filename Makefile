@@ -1,11 +1,12 @@
 .PHONY: lint format test build dev
 
 lint:
-	go vet ./...
+	golangci-lint run ./...
 	cd src/frontend && npx biome check src
 
 format:
-	cd src/frontend && npx biome format --write src
+	cd src/frontend && npx biome check --write src
+	golangci-lint fmt
 
 test:
 	go test ./...

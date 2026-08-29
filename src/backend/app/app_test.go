@@ -116,7 +116,7 @@ func TestRecoveryCancelReturnsCancelled(t *testing.T) {
 	if err != nil {
 		t.Fatalf("handle: %v", err)
 	}
-	if got != "cancelled" {
+	if got != "canceled" {
 		t.Fatalf("got %q", got)
 	}
 }

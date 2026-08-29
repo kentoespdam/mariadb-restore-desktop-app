@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	crypto "github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/crypto"
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/catalog"
+	crypto "github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/crypto"
 )
 
 type staticModal struct{ d Decision }

@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	crypto "github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/crypto"
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/catalog"
+	crypto "github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/crypto"
 )
 
 // KeyDir is the directory app.key lives in. ExeDir is the directory

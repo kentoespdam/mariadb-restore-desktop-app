@@ -1,10 +1,14 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
   "files": {
-    "include": ["src/frontend/src/**/*.{ts,tsx,js,jsx,json}"],
-    "ignore": ["src/frontend/dist", "src/frontend/wailsjs", "src/frontend/node_modules"]
+    "includes": [
+      "**/src/frontend/src/**/*.{ts,tsx,js,jsx,json}",
+      "!**/src/frontend/dist",
+      "!**/src/frontend/wailsjs",
+      "!**/src/frontend/node_modules"
+    ]
   },
-  "organizeImports": { "enabled": true },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
     "rules": {

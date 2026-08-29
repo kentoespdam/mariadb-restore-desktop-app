@@ -3,9 +3,11 @@ import { createRoot } from 'react-dom/client';
 import { App } from './app';
 import './style.css';
 
-const root = createRoot(document.getElementById('root')!);
+const host = document.getElementById('root');
+if (!host) throw new Error('root element missing');
+const root = createRoot(host);
 root.render(
   <StrictMode>
     <App />
-  </StrictMode>
+  </StrictMode>,
 );

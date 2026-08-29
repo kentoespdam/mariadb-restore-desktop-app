@@ -1,6 +1,15 @@
+import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { ListServerProfiles, CreateServerProfile, DeleteServerProfile } from '../../../wailsjs/go/app/App';
-import { profile } from '../../../wailsjs/go/models';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  CreateServerProfile,
+  DeleteServerProfile,
+  ListServerProfiles,
+} from '../../../wailsjs/go/app/App';
+import type { profile } from '../../../wailsjs/go/models';
 
 type View = profile.View;
 
@@ -21,6 +30,7 @@ export function Profiles() {
     }
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only
   useEffect(() => {
     refresh();
   }, []);
@@ -63,61 +73,68 @@ export function Profiles() {
       </p>
       {err && <p className="mt-3 text-red-400 text-sm">{err}</p>}
 
-      <div className="mt-6 grid gap-4 max-w-2xl">
-        <label className="grid gap-1">
-          <span className="text-xs text-slate-400">Name</span>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="bg-slate-800 border border-slate-700 rounded px-2 py-1"
-          />
-        </label>
-        <div className="grid grid-cols-3 gap-3">
-          <label className="grid gap-1 col-span-2">
-            <span className="text-xs text-slate-400">Host</span>
-            <input
-              value={host}
-              onChange={(e) => setHost(e.target.value)}
-              className="bg-slate-800 border border-slate-700 rounded px-2 py-1"
+      <Card className="mt-6 max-w-2xl bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle>Add profile</CardTitle>
+          <CardDescription>Connection credentials for a MariaDB server.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="grid gap-1.5">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="bg-slate-900 border-slate-700"
             />
-          </label>
-          <label className="grid gap-1">
-            <span className="text-xs text-slate-400">Port</span>
-            <input
-              type="number"
-              value={port}
-              onChange={(e) => setPort(Number(e.target.value))}
-              className="bg-slate-800 border border-slate-700 rounded px-2 py-1"
-            />
-          </label>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="grid gap-1">
-            <span className="text-xs text-slate-400">User</span>
-            <input
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
-              className="bg-slate-800 border border-slate-700 rounded px-2 py-1"
-            />
-          </label>
-          <label className="grid gap-1">
-            <span className="text-xs text-slate-400">Password</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-slate-800 border border-slate-700 rounded px-2 py-1"
-            />
-          </label>
-        </div>
-        <button
-          type="button"
-          onClick={onCreate}
-          className="self-start bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded"
-        >
-          Add profile
-        </button>
-      </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="grid gap-1.5 col-span-2">
+              <Label htmlFor="host">Host</Label>
+              <Input
+                id="host"
+                value={host}
+                onChange={(e) => setHost(e.target.value)}
+                className="bg-slate-900 border-slate-700"
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="port">Port</Label>
+              <Input
+                id="port"
+                type="number"
+                value={port}
+                onChange={(e) => setPort(Number(e.target.value))}
+                className="bg-slate-900 border-slate-700"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-1.5">
+              <Label htmlFor="user">User</Label>
+              <Input
+                id="user"
+                value={user}
+                onChange={(e) => setUser(e.target.value)}
+                className="bg-slate-900 border-slate-700"
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-slate-900 border-slate-700"
+              />
+            </div>
+          </div>
+          <Button onClick={onCreate} className="self-start">
+            Add profile
+          </Button>
+        </CardContent>
+      </Card>
 
       <table className="mt-8 w-full max-w-2xl text-sm">
         <thead>
@@ -137,13 +154,14 @@ export function Profiles() {
               <td>{v.user}</td>
               <td>{v.sslMode}</td>
               <td className="text-right">
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => onDelete(v.id)}
-                  className="text-red-400 hover:text-red-300 text-xs"
+                  aria-label="Delete"
                 >
-                  Delete
-                </button>
+                  <Trash2 />
+                </Button>
               </td>
             </tr>
           ))}

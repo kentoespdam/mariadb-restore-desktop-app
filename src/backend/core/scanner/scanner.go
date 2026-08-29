@@ -36,11 +36,11 @@ func (s *Scanner) Scan(path string) ([]Object, error) {
 	var out []Object
 	var pos int64
 	var pending struct {
-		typ    ObjectType
-		name   string
-		db     string
-		start  int64
-		open   bool // true between the opening "CREATE TABLE / INSERT" line and the closing ";"
+		typ   ObjectType
+		name  string
+		db    string
+		start int64
+		open  bool // true between the opening "CREATE TABLE / INSERT" line and the closing ";"
 	}
 
 	flush := func(endPos int64) {

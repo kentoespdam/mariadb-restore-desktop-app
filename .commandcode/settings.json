@@ -10,7 +10,9 @@
       "Shell(REPO=/mnt/6EEA8C7EEA8C43F5/golang/mariadb-restore-desktop-app:*)",
       "Shell(go:*)",
       "Shell(npm:*)",
-      "Shell(/home/dev/go/bin/wails:*)"
+      "Shell(/home/dev/go/bin/wails:*)",
+      "Shell(npx biome check src/frontend/src 2 >& 1)",
+      "Shell(npx biome check --write src/frontend/src 2 >& 1)"
     ],
     "deny": [],
     "defaultMode": "default"

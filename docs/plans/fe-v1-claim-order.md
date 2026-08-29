@@ -20,7 +20,7 @@ Per `knowledge.md` grill mode this plan ships only docs + beads issues. Implemen
 
 ## Assembly
 
-- [ ] bd-6ar — FE-09 App routing expansion — blocked by: FE-03, FE-04, FE-05, FE-06, FE-07, FE-08
+- [x] bd-6ar — FE-09 App routing expansion — ✅ closed
 - [ ] bd-8xe — FE-10 Tests for new screens — blocked by: FE-04, FE-05, FE-06, FE-07, FE-08, FE-09
 - [ ] bd-a8h — FE-11 Verification + cleanup — blocked by: FE-10
 

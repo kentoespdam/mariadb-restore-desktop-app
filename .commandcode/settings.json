@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(bd:*)",
+      "Shell(bd --version 2>&1; echo \"---\"; bd list --all 2>&1 | head -5)",
+      "Shell(git:*)",
+      "Shell(head:*)",
+      "Shell(ls:*)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}

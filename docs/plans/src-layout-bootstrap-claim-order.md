@@ -13,27 +13,27 @@ Tick the box when claimed; mark ✅ when closed.
 
 Three independent starter slices. Each can be claimed by a different agent.
 
-- [ ] `mariadb-restore-desktop-app-72u` — Implement `core/crypto/` — AES-GCM primitives + `app.key` lifecycle — can start immediately
-- [ ] `mariadb-restore-desktop-app-hgu` — Implement `core/scanner/` — single-pass Byte-Offset Scanner — can start immediately
-- [ ] `mariadb-restore-desktop-app-xih` — Implement `platform/events/` — Wails event emitter primitive — can start immediately
+- [x] `mariadb-restore-desktop-app-72u` — ✅ closed — Implement `core/crypto/` — AES-GCM primitives + `app.key` lifecycle
+- [x] `mariadb-restore-desktop-app-hgu` — ✅ closed — Implement `core/scanner/` — single-pass Byte-Offset Scanner
+- [x] `mariadb-restore-desktop-app-xih` — ✅ closed — Implement `platform/events/` — Wails event emitter primitive
 
 After Wave 1 closes, the next three can be claimed:
 
-- [ ] `mariadb-restore-desktop-app-efw` — Implement `core/catalog/` — SQLite store with AES-GCM credentials — blocked by: `72u`
-- [ ] `mariadb-restore-desktop-app-ub9` — Implement `core/streamer/` — Virtual Streamer + Definer Stripper + ProgressReader — blocked by: `hgu`
+- [x] `mariadb-restore-desktop-app-efw` — ✅ closed — Implement `core/catalog/` — SQLite store with AES-GCM credentials
+- [x] `mariadb-restore-desktop-app-ub9` — ✅ closed — Implement `core/streamer/` — Virtual Streamer + Definer Stripper + ProgressReader
 
 ---
 
 ## Wave 2 — Feature layer (after Wave 1 closes)
 
-- [ ] `mariadb-restore-desktop-app-b64` — Implement `features/recovery/` — Smart Recovery modal + Reset policy — blocked by: `72u`, `efw`, `xih`
-- [ ] `mariadb-restore-desktop-app-qbk` — Implement `features/profile/` — Server Profile CRUD — blocked by: `efw`
+- [x] `mariadb-restore-desktop-app-b64` — ✅ closed — Implement `features/recovery/` — Smart Recovery modal + Reset policy
+- [x] `mariadb-restore-desktop-app-qbk` — ✅ closed — Implement `features/profile/` — Server Profile CRUD
 
 ---
 
 ## Wave 3 — Assembly (last)
 
-- [ ] `mariadb-restore-desktop-app-ap9` — Implement `app/` — assembly + Wails App constructor + binding stubs — blocked by: `b64`, `qbk`
+- [x] `mariadb-restore-desktop-app-ap9` — ✅ closed — Implement `app/` — assembly + Wails App constructor + binding stubs
 
 ---
 

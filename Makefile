@@ -22,4 +22,4 @@ build:
 	wails build -tags webkit2_41
 
 dev:
-	wails dev -tags webkit2_41
+	env -u LD_LIBRARY_PATH -u LD_PRELOAD wails dev -tags webkit2_41

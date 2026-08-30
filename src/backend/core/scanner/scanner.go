@@ -81,17 +81,23 @@ func (s *Scanner) Scan(path string) ([]Object, error) {
 				pending.start = pos
 				pending.open = true
 			case strings.HasPrefix(upper, "INSERT INTO "):
-				// "INSERT INTO `t` VALUES (...);" — single-line.
+				// mariadb-dump splits a long VALUES list across
+				// multiple lines:
+				//
+				//   INSERT INTO `t` VALUES
+				//   (1,'a'),
+				//   (2,'b');
+				//
+				// so we treat INSERT the same as CREATE TABLE: open
+				// on the first line, close on the line ending in ';'.
 				flush(pos)
-				out = append(out, Object{
-					StartByte:    pos,
-					EndByte:      next,
-					ObjectType:   TypeInsert,
-					ObjectName:   extractIdent(trimmed, "INSERT INTO "),
-					DatabaseName: s.currentDB,
-				})
+				pending.typ = TypeInsert
+				pending.name = extractIdent(trimmed, "INSERT INTO ")
+				pending.db = s.currentDB
+				pending.start = pos
+				pending.open = true
 			}
-			// closing semicolon for multi-line CREATE TABLE
+			// closing semicolon for multi-line CREATE TABLE / INSERT
 			if pending.open && strings.HasSuffix(trimmed, ";") {
 				flush(next)
 			}

@@ -9,11 +9,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/catalog"
 	crypto "github.com/baguspdam/mariadb-restore-desktop-app/src/backend/core/crypto"
+	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/features/backup"
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/features/profile"
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/features/recovery"
+	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/features/restore"
+	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/features/settings"
 	"github.com/baguspdam/mariadb-restore-desktop-app/src/backend/platform/events"
 )
 
@@ -25,6 +29,9 @@ type App struct {
 	KeyPath  string
 	CatPath  string
 	Profile  *profile.Service
+	Backup   *backup.Service
+	Restore  *restore.Service
+	Settings *settings.Service
 	Recovery *RecoveryService
 }
 
@@ -83,12 +90,20 @@ func New(ctx context.Context, exeDir string) (*App, error) {
 		},
 		Decision: decisions,
 	}
+
+	profileSvc := profile.New(cat, key)
+	settingsSvc := settings.New(exeDir, len(key)*8)
+	emitter := events.Default(ctx)
+
 	return &App{
 		Catalog:  cat,
 		Key:      key,
 		KeyPath:  keyPath,
 		CatPath:  catPath,
-		Profile:  profile.New(cat, key),
+		Profile:  profileSvc,
+		Backup:   backup.New(profileSvc, emitter, settingsSvc.GetMariadbDumpPath()),
+		Restore:  restore.New(profileSvc, cat, emitter, settingsSvc.GetMariadbPath()),
+		Settings: settingsSvc,
 		Recovery: rs,
 	}, nil
 }
@@ -111,4 +126,33 @@ func (a *App) RebindCtx(ctx context.Context) {
 			Decision: a.Recovery.Decision,
 		}
 	}
+	setBgCtx(ctx)
+}
+
+// bgCtx is the long-lived background context the binding layer
+// passes to backup/restore services. Bound on RebindCtx (which is
+// called from Wails OnStartup) so the context lives as long as
+// the app.
+var (
+	bgCtxOnce sync.RWMutex
+	bgCtxVal  context.Context
+)
+
+func setBgCtx(ctx context.Context) {
+	bgCtxOnce.Lock()
+	bgCtxVal = ctx
+	bgCtxOnce.Unlock()
+}
+
+// bgCtx returns the Wails ctx for use as a parent context in
+// subprocess commands. If RebindCtx has not been called yet (e.g.
+// in a unit test), it falls back to context.Background() so the
+// subprocess can still start.
+func bgCtx() context.Context {
+	bgCtxOnce.RLock()
+	defer bgCtxOnce.RUnlock()
+	if bgCtxVal != nil {
+		return bgCtxVal
+	}
+	return context.Background()
 }

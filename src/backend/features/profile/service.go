@@ -91,6 +91,39 @@ func (s *Service) findByID(id string) (string, *catalog.Profile, error) {
 	return "", nil, fmt.Errorf("profile: id %q not found", id)
 }
 
+// Creds is the decrypted credentials the backup/restore subprocesses
+// need. Password is plaintext — this struct must never be returned
+// to the FE; bindings layer must convert to a redacted view before
+// crossing the Wails boundary.
+type Creds struct {
+	ID       string
+	Name     string
+	Host     string
+	Port     int
+	User     string
+	Password string
+	SSLMode  string
+}
+
+// CredentialsByID returns the decrypted profile. Used by backup and
+// restore to feed their subprocess argv without ever exposing the
+// password to the FE.
+func (s *Service) CredentialsByID(id string) (Creds, error) {
+	_, p, err := s.findByID(id)
+	if err != nil {
+		return Creds{}, err
+	}
+	return Creds{
+		ID:       p.ID,
+		Name:     p.Name,
+		Host:     p.Host,
+		Port:     p.Port,
+		User:     p.User,
+		Password: p.Password,
+		SSLMode:  p.SSLMode,
+	}, nil
+}
+
 // Delete removes a profile by id.
 func (s *Service) Delete(id string) error {
 	// catalog.Store keys by name; look up first

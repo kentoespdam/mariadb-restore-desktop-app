@@ -1,3 +1,14 @@
+import {
+  ArrowLeft,
+  CheckCircle2,
+  FileCode,
+  RotateCcw,
+  Search,
+  Server,
+  Sparkles,
+  XCircle,
+  Zap,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import {
   analyzeDump,
@@ -11,6 +22,9 @@ import { FilePicker } from '@/components/FilePicker';
 import { ProgressBar } from '@/components/ProgressBar';
 import { navigate, useHashRoute } from '@/hooks/useHashRoute';
 import { useWailsEvent } from '@/hooks/useWailsEvent';
+
+const inputClass =
+  'bg-slate-900/90 border-slate-700/80 hover:border-slate-600 focus:border-sky-500 h-10 rounded-xl border px-3.5 py-2 text-sm text-white w-full transition-all focus:outline-none focus:ring-2 focus:ring-sky-500/30 placeholder:text-slate-500 disabled:opacity-50 disabled:cursor-not-allowed';
 
 type Phase = 'idle' | 'analyzing' | 'restoring' | 'done' | 'error';
 
@@ -62,7 +76,7 @@ export function Restore() {
     },
   );
 
-  const canStart = filePath.trim() && profileId;
+  const canStart = Boolean(filePath.trim() && profileId);
   const busy = phase === 'restoring' || phase === 'analyzing';
 
   const onRestore = async () => {
@@ -102,59 +116,132 @@ export function Restore() {
   };
 
   return (
-    <section>
+    <section className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Restore</h2>
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-white">Restore</h2>
+          <p className="mt-1 text-slate-400 text-sm">
+            Full Restore pipes the entire dump to{' '}
+            <code className="bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded font-mono text-sky-300">
+              mariadb
+            </code>{' '}
+            without scanning. Partial Restore first analyzes the dump, then lets you pick tables.
+          </p>
+        </div>
         <Button variant="ghost" onClick={() => navigate('/')}>
+          <ArrowLeft className="size-4" />
           Back to Dashboard
         </Button>
       </div>
-      <p className="mt-1 text-slate-400 text-sm">
-        Full Restore pipes the entire dump to{' '}
-        <code className="bg-slate-900 px-1 rounded">mariadb</code> without scanning. Partial Restore
-        first analyzes the dump, then lets you pick tables.
-      </p>
-      {err && <p className="mt-3 text-red-400 text-sm">{err}</p>}
 
-      <div className="mt-6 max-w-2xl bg-slate-800 border-slate-700 rounded-lg p-6 space-y-4">
-        <div className="grid gap-1.5">
-          <label htmlFor="file" className="text-sm text-slate-300">
-            Dump file (.sql)
-          </label>
-          <FilePicker id="file" accept=".sql" onChange={setFilePath} />
-          {filePath && <p className="text-xs text-slate-500">Selected: {filePath}</p>}
+      {/* Mode Comparison Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-2">
+          <div className="flex items-center gap-2.5 text-sky-400 font-semibold text-sm">
+            <div className="size-7 rounded-lg bg-sky-500/10 flex items-center justify-center">
+              <Zap className="size-4" />
+            </div>
+            <span>Full Stream Restore</span>
+          </div>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Directly pipes raw dump bytes to the MariaDB CLI subprocess. Optimal for restoring the
+            complete archive with zero temporary disk usage.
+          </p>
         </div>
 
-        <div className="grid gap-1.5">
-          <label htmlFor="profile" className="text-sm text-slate-300">
-            Target server profile
-          </label>
-          <select
-            id="profile"
-            value={profileId}
-            onChange={(e) => setProfileId(e.target.value)}
-            className="bg-slate-900 border-slate-700 h-9 rounded-md border px-3 py-1 text-sm text-white w-full"
-            disabled={busy}
+        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-2">
+          <div className="flex items-center gap-2.5 text-indigo-400 font-semibold text-sm">
+            <div className="size-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+              <Sparkles className="size-4" />
+            </div>
+            <span>Selective / Partial Restore</span>
+          </div>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Fast byte-offset scanner indexes tables, triggers, and routines into a lightweight
+            SQLite catalog so you can choose exactly what to restore.
+          </p>
+        </div>
+      </div>
+
+      {err && (
+        <div className="flex items-start gap-3 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-300 text-sm">
+          <XCircle className="size-5 text-rose-400 shrink-0 mt-0.5" />
+          <p>{err}</p>
+        </div>
+      )}
+
+      {phase === 'done' && result && (
+        <div className="flex items-start gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-300 text-sm">
+          <CheckCircle2 className="size-5 text-emerald-400 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-emerald-200">{result}</p>
+            <p className="text-xs text-slate-400 mt-1 font-mono">{filePath}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Input Configuration Card */}
+      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
+        <div className="grid gap-5">
+          <div className="grid gap-1.5">
+            <label
+              htmlFor="file"
+              className="text-xs font-medium text-slate-300 flex items-center gap-1.5"
+            >
+              <FileCode className="size-3.5 text-sky-400" />
+              Dump file (.sql)
+            </label>
+            <FilePicker id="file" accept=".sql" onChange={setFilePath} disabled={busy} />
+            {filePath && (
+              <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-950/60 border border-slate-800/80 px-3 py-1.5 rounded-lg font-mono truncate">
+                <span className="text-sky-400 font-semibold">Selected:</span>
+                <span className="truncate">{filePath}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="grid gap-1.5">
+            <label
+              htmlFor="profile"
+              className="text-xs font-medium text-slate-300 flex items-center gap-1.5"
+            >
+              <Server className="size-3.5 text-sky-400" />
+              Target server profile
+            </label>
+            <select
+              id="profile"
+              value={profileId}
+              onChange={(e) => setProfileId(e.target.value)}
+              className={inputClass}
+              disabled={busy}
+            >
+              <option value="">— select —</option>
+              {profiles.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} ({p.host}:{p.port})
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-800/80">
+          <Button
+            data-action="restore"
+            onClick={onRestore}
+            disabled={!canStart || busy}
+            className="bg-sky-600 hover:bg-sky-500 active:bg-sky-700 shadow-sky-950/50"
           >
-            <option value="">— select —</option>
-            {profiles.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name} ({p.host}:{p.port})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex gap-2">
-          <Button data-action="restore" onClick={onRestore} disabled={!canStart || busy}>
+            <RotateCcw className="size-4" />
             Restore
           </Button>
           <Button
             data-action="analyze"
-            variant="ghost"
+            variant="secondary"
             onClick={onAnalyze}
             disabled={!canStart || busy}
           >
+            <Search className="size-4 text-indigo-400" />
             Analyze
           </Button>
           {phase === 'restoring' && (
@@ -165,13 +252,18 @@ export function Restore() {
         </div>
       </div>
 
-      {phase === 'analyzing' && <p className="mt-4 text-sm text-slate-400">Analyzing dump…</p>}
+      {phase === 'analyzing' && (
+        <div className="flex items-center gap-3 p-5 bg-slate-900/80 border border-slate-800 rounded-2xl">
+          <div className="size-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin shrink-0" />
+          <p className="text-sm text-slate-300 font-medium">Analyzing dump…</p>
+        </div>
+      )}
+
       {phase === 'restoring' && (
-        <div className="mt-6 max-w-2xl">
+        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-sm">
           <ProgressBar soFar={soFar} total={total} label="Restore progress" />
         </div>
       )}
-      {phase === 'done' && result && <p className="mt-4 text-emerald-400 text-sm">{result}</p>}
     </section>
   );
 }

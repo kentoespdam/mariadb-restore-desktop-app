@@ -169,6 +169,12 @@ func (s *Service) run(
 	// parsing every line of stderr.
 	stop := make(chan struct{})
 	defer close(stop)
+	// Emit one synchronous tick before launching the loop so even
+	// sub-ticker-interval dumps (most real-world dumps are <150ms)
+	// reach the FE with a progress event. Without this the loop's
+	// first tick could land after cmd.Wait() returns and the UI
+	// would show "Scanning…" for the entire run.
+	s.emitProgress(jobID, outputPath)
 	go s.progressLoop(jobID, outputPath, stop, ctx)
 
 	waitErr := cmd.Wait()
@@ -211,7 +217,7 @@ func (s *Service) run(
 }
 
 func (s *Service) progressLoop(jobID, outputPath string, stop <-chan struct{}, ctx context.Context) {
-	ticker := time.NewTicker(150 * time.Millisecond)
+	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
 	for {
 		select {
@@ -220,17 +226,21 @@ func (s *Service) progressLoop(jobID, outputPath string, stop <-chan struct{}, c
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			info, err := os.Stat(outputPath)
-			if err != nil {
-				continue
-			}
-			_ = s.emitter.Emit(context.Background(), "backup:progress", Progress{
-				JobID: jobID,
-				SoFar: info.Size(),
-				Total: 0,
-			})
+			s.emitProgress(jobID, outputPath)
 		}
 	}
+}
+
+func (s *Service) emitProgress(jobID, outputPath string) {
+	info, err := os.Stat(outputPath)
+	if err != nil {
+		return
+	}
+	_ = s.emitter.Emit(context.Background(), "backup:progress", Progress{
+		JobID: jobID,
+		SoFar: info.Size(),
+		Total: 0,
+	})
 }
 
 // Cancel aborts the subprocess for jobID. No-op if the job already

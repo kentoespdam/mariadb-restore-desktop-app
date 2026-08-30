@@ -49,13 +49,13 @@ type FullRequest struct {
 // to catalog.object rows; the service resolves them back to byte
 // ranges against FilePath.
 type PartialRequest struct {
-	ProfileID         string
-	FilePath          string
-	SelectedIDs       []int
-	IncludeRoutines   bool
-	IncludeTriggers   bool
-	IncludeEvents     bool
-	BinaryPath        string
+	ProfileID       string
+	FilePath        string
+	SelectedIDs     []int
+	IncludeRoutines bool
+	IncludeTriggers bool
+	IncludeEvents   bool
+	BinaryPath      string
 }
 
 // Service is the restore runner.
@@ -306,7 +306,7 @@ func (s *Service) runPartial(
 	// references. Use the first part's database so mariadb knows
 	// where to apply the CREATE/INSERT statements. If all parts
 	// are from the same database this is exact; if they're mixed
-	// the user picked inconsistent rows and we honour the first.
+	// the user picked inconsistent rows and we honor the first.
 	header := baseHeader
 	if len(parts) > 0 && parts[0].DatabaseName != "" {
 		header = "USE `" + parts[0].DatabaseName + "`;\n" + baseHeader
@@ -446,7 +446,7 @@ func (s *Service) Cancel(jobID string) {
 
 // AnalyzeDump runs the Byte-Offset Scanner against path and writes
 // the result to the catalog (replacing any prior objects for the
-// same path). The number of objects catalogued is returned so the FE
+// same path). The number of objects catalogd is returned so the FE
 // can show "Analyzed N objects" without re-listing.
 func (s *Service) AnalyzeDump(path string) (int, error) {
 	if err := validateFile(path); err != nil {
@@ -474,10 +474,10 @@ func (s *Service) ListCatalogObjects(path string) ([]CatalogObject, error) {
 	out := make([]CatalogObject, 0, len(rows))
 	for _, r := range rows {
 		out = append(out, CatalogObject{
-			ID:       r.ID,
-			Database: r.DatabaseName,
-			Name:     r.ObjectName,
-			Type:     stringToObjectType(r.ObjectType),
+			ID:        r.ID,
+			Database:  r.DatabaseName,
+			Name:      r.ObjectName,
+			Type:      stringToObjectType(r.ObjectType),
 			StartByte: r.StartByte,
 			EndByte:   r.EndByte,
 		})
@@ -502,7 +502,7 @@ func stringToObjectType(s string) string {
 	case scanner.TypeCreateTable, scanner.TypeInsert, scanner.TypeUse:
 		return s
 	}
-	// Scanned-but-unrecognised types round-trip as-is so the FE
+	// Scanned-but-unrecognized types round-trip as-is so the FE
 	// filter toggles for ROUTINE/TRIGGER/EVENT can match.
 	return s
 }

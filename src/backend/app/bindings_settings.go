@@ -60,7 +60,7 @@ type ResetAndReinitResult struct {
 // the event here because the user already confirmed the reset by
 // clicking the Settings Reset button.
 func (a *App) ResetAndReinit() (ResetAndReinitResult, error) {
-	if err := a.Recovery.Service.Cat.Close(); err != nil {
+	if err := a.Recovery.Cat.Close(); err != nil {
 		return ResetAndReinitResult{}, err
 	}
 	if _, err := recovery.Wipe(a.Recovery.Paths); err != nil {

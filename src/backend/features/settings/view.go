@@ -6,12 +6,12 @@ import "fmt"
 // the on-disk Settings with the catalog / app.key paths from the
 // Executable Scope (CONTEXT) so the screen has a single source.
 type View struct {
-	ExeDir         string `json:"exeDir"`
-	CatalogPath    string `json:"catalogPath"`
-	AppKeyPath     string `json:"appKeyPath"`
-	MariadbPath    string `json:"mariadbPath"`
-	MariadbDump    string `json:"mariadbDumpPath"`
-	KeyBits        int    `json:"keyBits"`
+	ExeDir      string `json:"exeDir"`
+	CatalogPath string `json:"catalogPath"`
+	AppKeyPath  string `json:"appKeyPath"`
+	MariadbPath string `json:"mariadbPath"`
+	MariadbDump string `json:"mariadbDumpPath"`
+	KeyBits     int    `json:"keyBits"`
 }
 
 // BuildView assembles a View from the service state plus the catalog

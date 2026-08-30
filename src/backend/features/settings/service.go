@@ -114,10 +114,7 @@ func (s *Service) Save(in Input) error {
 	if in.MariadbDumpPath == "" {
 		in.MariadbDumpPath = DefaultMariadbDumpPath
 	}
-	blob, err := json.MarshalIndent(Settings{
-		MariadbPath:     in.MariadbPath,
-		MariadbDumpPath: in.MariadbDumpPath,
-	}, "", "  ")
+	blob, err := json.MarshalIndent(Settings(in), "", "  ")
 	if err != nil {
 		return fmt.Errorf("settings: marshal: %w", err)
 	}

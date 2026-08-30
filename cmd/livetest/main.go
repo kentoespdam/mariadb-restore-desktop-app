@@ -103,7 +103,7 @@ func run() error {
 		// ponytail: also dump the raw stderr to a file we can read after
 		f, ferr := os.Create(filepath.Join("/tmp", "livetest-stderr-"+jobID+".log"))
 		if ferr == nil {
-			f.WriteString(stderr)
+			_, _ = f.WriteString(stderr)
 			f.Close()
 		}
 	})
@@ -131,8 +131,8 @@ func run() error {
 	fmt.Println("\n=== 2. Backup (mariadb-dump subprocess) ===")
 	dumpPath := filepath.Join(dir, "backup.sql")
 	jobID, err := backupSvc.Start(ctx, backup.Request{
-		ProfileID: profID,
-		Databases: []string{"shop"},
+		ProfileID:  profID,
+		Databases:  []string{"shop"},
 		OutputPath: dumpPath,
 	})
 	if err != nil {
@@ -182,9 +182,9 @@ func run() error {
 	}
 
 	jobID2, err := restoreSvc.StartPartial(ctx, restore.PartialRequest{
-		ProfileID:     profID,
-		FilePath:      dumpPath,
-		SelectedIDs:   productIDs,
+		ProfileID:   profID,
+		FilePath:    dumpPath,
+		SelectedIDs: productIDs,
 	})
 	if err != nil {
 		return fmt.Errorf("start partial: %w", err)
@@ -262,11 +262,11 @@ func run() error {
 	}
 	// After cancel, the dump file should be removed. The timing is
 	// tight because mariadb-dump is fast; we tolerate either a missing
-	// file OR a file whose content is smaller than the non-cancelled
-	// dump (proving we cancelled mid-flight).
+	// file OR a file whose content is smaller than the non-canceled
+	// dump (proving we canceled mid-flight).
 	st, statErr := os.Stat(dumpPath2)
 	if statErr == nil {
-		// File exists — was the subprocess actually cancelled? Check
+		// File exists — was the subprocess actually canceled? Check
 		// that the dump is incomplete (smaller than what an
 		// uninterrupted backup would produce).
 		if st.Size() > 6000 {
@@ -384,7 +384,7 @@ func waitForDoneAllowingCancelError(emitter *recordingEmitter, eventName, jobID 
 			case backup.Done:
 				if d.JobID == jobID {
 					if d.Status == "success" {
-						return fmt.Errorf("cancel: subprocess completed normally; never cancelled")
+						return fmt.Errorf("cancel: subprocess completed normally; never canceled")
 					}
 					if d.Status == "error" && d.Message != "canceled" {
 						return fmt.Errorf("unexpected error: %s", d.Message)
@@ -436,7 +436,7 @@ func dropTable(host, port, user, pass, db, table string) error {
 	cmd := exec.Command("mariadb",
 		"-h", host, "-P", port,
 		"-u", user, fmt.Sprintf("-p%s", pass),
-		fmt.Sprintf("%s", db),
+		db,
 		"-e", fmt.Sprintf("SET FOREIGN_KEY_CHECKS=0; DROP TABLE IF EXISTS `%s`; SET FOREIGN_KEY_CHECKS=1;", table),
 	)
 	out, err := cmd.CombinedOutput()

@@ -54,7 +54,7 @@ func (a *App) CancelRestore(jobID string) error {
 }
 
 // AnalyzeDump scans the dump file at path and writes the byte-range
-// catalogue to the local SQLite. Returns the number of objects
+// catalog to the local SQLite. Returns the number of objects
 // recorded.
 func (a *App) AnalyzeDump(path string) (int, error) {
 	return a.Restore.AnalyzeDump(path)

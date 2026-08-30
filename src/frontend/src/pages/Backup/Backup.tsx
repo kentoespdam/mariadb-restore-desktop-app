@@ -7,7 +7,7 @@ import {
   Server,
   XCircle,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cancelBackup, ListServerProfiles, type profile, startBackup } from '@/api';
 import { Button } from '@/components/Button';
 import { ProgressBar } from '@/components/ProgressBar';
@@ -29,6 +29,12 @@ export function Backup() {
   const [outputPath, setOutputPath] = useState('');
   const [phase, setPhase] = useState<Phase>('idle');
   const [jobId, setJobId] = useState<string | null>(null);
+  // ponytail: synchronous mirror of jobId. backup:done can arrive
+  // in the same tick as the startBackup() promise resolves (fast
+  // dumps); reading jobId from closed-over state would drop the
+  // event because the React render that reflects setJobId has not
+  // committed yet.
+  const jobIdRef = useRef<string | null>(null);
   const [soFar, setSoFar] = useState(0);
   const [total, setTotal] = useState(0);
   const [err, setErr] = useState<string | null>(null);
@@ -47,7 +53,7 @@ export function Backup() {
   useWailsEvent<{ jobId: string; soFar: number; total: number }>(
     'backup:progress',
     (p) => {
-      if (p.jobId !== jobId) return;
+      if (p.jobId !== jobIdRef.current) return;
       setSoFar(p.soFar);
       setTotal(p.total);
     },
@@ -57,7 +63,7 @@ export function Backup() {
   useWailsEvent<{ jobId: string; status: 'success' | 'error'; message?: string }>(
     'backup:done',
     (p) => {
-      if (p.jobId !== jobId) return;
+      if (p.jobId !== jobIdRef.current) return;
       if (p.status === 'success') {
         setPhase('done');
         setResult('Backup completed');
@@ -85,6 +91,9 @@ export function Backup() {
           .filter(Boolean),
         outputPath,
       });
+      // Set the synchronous mirror first so events arriving in the
+      // same tick as the Start promise resolves can match.
+      jobIdRef.current = handle.jobId;
       setJobId(handle.jobId);
     } catch (e) {
       setPhase('error');

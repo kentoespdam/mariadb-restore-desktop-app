@@ -9,7 +9,7 @@ import {
   XCircle,
   Zap,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   analyzeDump,
   cancelRestore,
@@ -37,6 +37,9 @@ export function Restore() {
   const [filePath, setFilePath] = useState<string>('');
   const [phase, setPhase] = useState<Phase>('idle');
   const [jobId, setJobId] = useState<string | null>(null);
+  // ponytail: synchronous mirror of jobId. See Backup.tsx for the
+  // full rationale; restore has the same shape and the same race.
+  const jobIdRef = useRef<string | null>(null);
   const [soFar, setSoFar] = useState(0);
   const [total, setTotal] = useState(0);
   const [err, setErr] = useState<string | null>(null);
@@ -55,7 +58,7 @@ export function Restore() {
   useWailsEvent<{ jobId: string; soFar: number; total: number }>(
     'restore:progress',
     (p) => {
-      if (p.jobId !== jobId) return;
+      if (p.jobId !== jobIdRef.current) return;
       setSoFar(p.soFar);
       setTotal(p.total);
     },
@@ -65,7 +68,7 @@ export function Restore() {
   useWailsEvent<{ jobId: string; status: 'success' | 'error'; message?: string }>(
     'restore:done',
     (p) => {
-      if (p.jobId !== jobId) return;
+      if (p.jobId !== jobIdRef.current) return;
       if (p.status === 'success') {
         setPhase('done');
         setResult('Restore completed');
@@ -87,6 +90,9 @@ export function Restore() {
     setPhase('restoring');
     try {
       const handle = await startFullRestore({ filePath, profileId });
+      // Set the synchronous mirror first so events arriving in the
+      // same tick as the Start promise resolves can match.
+      jobIdRef.current = handle.jobId;
       setJobId(handle.jobId);
     } catch (e) {
       setPhase('error');

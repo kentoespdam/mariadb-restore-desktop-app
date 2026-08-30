@@ -157,6 +157,44 @@ describe('Backup', () => {
     });
   });
 
+  it('done event arriving the same tick as startBackup resolves still updates UI', async () => {
+    // Regression for "backup UI stuck at Backup Progress": a fast
+    // dump fires backup:done from the BE in the same tick as the
+    // startBackup promise resolves. If the handler reads jobId from
+    // closed-over state (not a ref), the render that reflects the
+    // new jobId hasn't committed yet, and the done event is dropped.
+    startBackup.mockImplementation(async () => {
+      // Schedule the emit to run AFTER the awaiting microtask that
+      // sets jobId, but in the same tick (no setTimeout) — mirroring
+      // the real Wails ordering where the Go goroutine returns the
+      // jobId and emits events into the bus before the FE promise
+      // resolves.
+      const handle = { jobId: 'job-fast', cancel: vi.fn() };
+      Promise.resolve().then(() => {
+        Promise.resolve().then(() => {
+          emit('backup:done', { jobId: 'job-fast', status: 'success' });
+        });
+      });
+      return handle;
+    });
+
+    const { getByLabelText, getByText } = render(<Backup />);
+    await waitFor(() => {
+      expect(getByText('Start backup')).toBeInTheDocument();
+    });
+    fireEvent.change(getByLabelText('Server profile'), { target: { value: 'p1' } });
+    fireEvent.change(getByLabelText(/Databases/), { target: { value: 'a' } });
+    fireEvent.change(getByLabelText(/Output file/), { target: { value: 'o.sql' } });
+
+    await act(async () => {
+      fireEvent.click(getByText('Start backup'));
+    });
+
+    await waitFor(() => {
+      expect(getByText('Backup completed')).toBeInTheDocument();
+    });
+  });
+
   it('pre-selects the profile from the ?profile= query param', async () => {
     window.location.hash = '#/backup?profile=p1';
     const { getByLabelText, getByText } = render(<Backup />);

@@ -25,6 +25,9 @@ export function ObjectGrid() {
   const [includeTriggers, setIncludeTriggers] = useState(true);
   const [includeEvents, setIncludeEvents] = useState(true);
   const [jobId, setJobId] = useState<string | null>(null);
+  // ponytail: synchronous mirror of jobId. See Backup.tsx for the
+  // rationale; ObjectGrid's partial restore has the same race.
+  const jobIdRef = useRef<string | null>(null);
   const [soFar, setSoFar] = useState(0);
   const [total, setTotal] = useState(0);
   const [result, setResult] = useState<string | null>(null);
@@ -51,7 +54,7 @@ export function ObjectGrid() {
   useWailsEvent<{ jobId: string; soFar: number; total: number }>(
     'restore:progress',
     (p) => {
-      if (p.jobId !== jobId) return;
+      if (p.jobId !== jobIdRef.current) return;
       setSoFar(p.soFar);
       setTotal(p.total);
     },
@@ -61,7 +64,7 @@ export function ObjectGrid() {
   useWailsEvent<{ jobId: string; status: 'success' | 'error'; message?: string }>(
     'restore:done',
     (p) => {
-      if (p.jobId !== jobId) return;
+      if (p.jobId !== jobIdRef.current) return;
       if (p.status === 'success') {
         setPhase('done');
         setResult(`Restored ${selected.size} objects`);
@@ -118,6 +121,9 @@ export function ObjectGrid() {
         includeTriggers,
         includeEvents,
       });
+      // Set the synchronous mirror first so events arriving in the
+      // same tick as the Start promise resolves can match.
+      jobIdRef.current = handle.jobId;
       setJobId(handle.jobId);
     } catch (e) {
       setPhase('error');

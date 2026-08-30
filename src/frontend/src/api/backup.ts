@@ -1,30 +1,22 @@
-// Backup workflow: FE contract. The real Go binding
-// (src/backend/features/backup/) lands in a follow-up plan; until then
-// stubs surface the missing implementation in dev.
-//
-// ponytail: stub-throws-on-call so a forgotten real implementation
-// cannot pass silently. Re-throw the same string the FE expects to
-// see in production once a real BE slice wires the same name.
+// Backup workflow: real Wails bindings. The Go side runs
+// mariadb-dump in a subprocess and streams backup:progress +
+// backup:done events.
+import { CancelBackup, StartBackup } from '../../wailsjs/go/app/App';
+import type { app } from '../../wailsjs/go/models';
 
-export interface BackupRequest {
-  profileId: string;
-  databases: string[];
-  outputPath: string;
+export type BackupRequest = app.BackupRequest;
+export type BackupHandle = { jobId: string; cancel: () => Promise<void> };
+
+export async function startBackup(req: BackupRequest): Promise<BackupHandle> {
+  const jobId = await StartBackup(req);
+  return {
+    jobId,
+    cancel: async () => {
+      await CancelBackup(jobId);
+    },
+  };
 }
 
-export interface BackupHandle {
-  jobId: string;
-  cancel: () => Promise<void>;
-}
-
-function notImplemented(name: string): never {
-  throw new Error(`not implemented: ${name}`);
-}
-
-export async function startBackup(_req: BackupRequest): Promise<BackupHandle> {
-  notImplemented('startBackup');
-}
-
-export async function cancelBackup(_jobId: string): Promise<void> {
-  notImplemented('cancelBackup');
+export async function cancelBackup(jobID: string): Promise<void> {
+  await CancelBackup(jobID);
 }

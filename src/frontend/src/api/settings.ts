@@ -1,38 +1,21 @@
-// Settings: FE contract.
-//
-// Executable Scope (CONTEXT): all app files live beside the binary.
-// The Settings screen surfaces this as read-only info and lets the
-// user override the mariadb / mariadb-dump binary paths.
+// Settings: real Wails bindings. The Go side persists binary-path
+// overrides in settings.json beside the binary (CONTEXT:
+// Executable Scope).
+import { GetSettings, ResetAndReinit, SaveSettings } from '../../wailsjs/go/app/App';
+import type { app } from '../../wailsjs/go/models';
 
-export interface Settings {
-  exeDir: string;
-  catalogPath: string;
-  appKeyPath: string;
-  mariadbPath: string;
-  mariadbDumpPath: string;
-  keyBits: 256;
-}
-
-export interface SaveSettingsInput {
-  mariadbPath: string;
-  mariadbDumpPath: string;
-}
-
-function notImplemented(name: string): never {
-  throw new Error(`not implemented: ${name}`);
-}
+export type Settings = app.SettingsView;
+export type SaveSettingsInput = app.SaveSettingsInput;
+export type ResetAndReinitResult = app.ResetAndReinitResult;
 
 export async function getSettings(): Promise<Settings> {
-  notImplemented('getSettings');
+  return GetSettings();
 }
 
-export async function saveSettings(_input: SaveSettingsInput): Promise<void> {
-  notImplemented('saveSettings');
+export async function saveSettings(input: SaveSettingsInput): Promise<void> {
+  await SaveSettings(input);
 }
 
-// ponytail: returns "unknown" sentinel so the Settings screen can
-// render before any real binding lands; replace with the real
-// recovery entry once the BE wires one.
-export async function resetAndReinit(): Promise<{ triggered: 'unknown' }> {
-  notImplemented('resetAndReinit');
+export async function resetAndReinit(): Promise<ResetAndReinitResult> {
+  return ResetAndReinit();
 }

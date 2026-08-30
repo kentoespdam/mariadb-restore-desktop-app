@@ -81,3 +81,30 @@ func TestScanMissingFile(t *testing.T) {
 		t.Fatal("want error for missing file")
 	}
 }
+
+const backtickFixture = "-- MariaDB dump 10.19\nUSE `db1`;\nCREATE TABLE `db1`.`t1` (id int);\nINSERT INTO `db1`.`t1` VALUES (1);\nCREATE TABLE `db1`.`t2` (id int);\n"
+
+func TestScanBacktickDbTable(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "dump.sql")
+	if err := os.WriteFile(path, []byte(backtickFixture), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	objs, err := New().Scan(path)
+	if err != nil {
+		t.Fatalf("scan: %v", err)
+	}
+	if len(objs) != 3 {
+		t.Fatalf("want 3 objects, got %d: %+v", len(objs), objs)
+	}
+	// ObjectName should be the TABLE name, not the DB name.
+	want := []string{"t1", "t1", "t2"}
+	for i, o := range objs {
+		if o.ObjectName != want[i] {
+			t.Errorf("obj[%d] ObjectName = %q, want %q", i, o.ObjectName, want[i])
+		}
+		if o.DatabaseName != "db1" {
+			t.Errorf("obj[%d] DatabaseName = %q, want db1", i, o.DatabaseName)
+		}
+	}
+}

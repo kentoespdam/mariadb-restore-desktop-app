@@ -124,14 +124,17 @@ func (s *Service) StartFull(parent context.Context, req FullRequest) (string, er
 	jobID := newID()
 	jobCtx, cancel := context.WithCancel(parent)
 
+	// ponytail: pass the password via MYSQL_PWD env var (avoids
+	// the -p flag, which can leak the password in `ps` output and
+	// breaks when the password contains special characters).
 	args := []string{
 		"-h", creds.Host,
 		"-P", strconv.Itoa(creds.Port),
 		"-u", creds.User,
-		fmt.Sprintf("-p%s", creds.Password),
 		"--comments",
 	}
 	cmd := exec.CommandContext(jobCtx, s.binMariadb, args...)
+	cmd.Env = append(os.Environ(), "MYSQL_PWD="+creds.Password)
 	in, err := cmd.StdinPipe()
 	if err != nil {
 		cancel()
@@ -189,10 +192,10 @@ func (s *Service) StartPartial(parent context.Context, req PartialRequest) (stri
 		"-h", creds.Host,
 		"-P", strconv.Itoa(creds.Port),
 		"-u", creds.User,
-		fmt.Sprintf("-p%s", creds.Password),
 		"--comments",
 	}
 	cmd := exec.CommandContext(jobCtx, s.binMariadb, args...)
+	cmd.Env = append(os.Environ(), "MYSQL_PWD="+creds.Password)
 	in, err := cmd.StdinPipe()
 	if err != nil {
 		cancel()
@@ -215,7 +218,8 @@ func (s *Service) StartPartial(parent context.Context, req PartialRequest) (stri
 }
 
 // runFull pipes the file end-to-end to the subprocess stdin and
-// emits progress via a stat ticker on the source file.
+// emits progress via a counter on the stdin writer (so the bar
+// reflects actual bytes written to mariadb, not source-file size).
 func (s *Service) runFull(
 	jobID string,
 	cmd *exec.Cmd,
@@ -224,17 +228,27 @@ func (s *Service) runFull(
 	filePath string,
 	ctx context.Context,
 ) {
-	stop := make(chan struct{})
-	defer close(stop)
-	go s.progressLoop(jobID, filePath, stop, ctx)
-
 	src, err := os.Open(filePath)
 	if err != nil {
 		_ = in.Close()
 		s.finishError(jobID, cmd, stderrBuf, err)
 		return
 	}
-	_, copyErr := io.Copy(in, src)
+	srcStat, statErr := src.Stat()
+	if statErr != nil {
+		_ = src.Close()
+		_ = in.Close()
+		s.finishError(jobID, cmd, stderrBuf, statErr)
+		return
+	}
+	total := srcStat.Size()
+
+	stop := make(chan struct{})
+	defer close(stop)
+	counter := &countingWriter{w: in}
+	go s.progressLoopTotal(jobID, stop, ctx, total, counter.snapshot)
+
+	_, copyErr := io.Copy(counter, src)
 	_ = src.Close()
 	_ = in.Close()
 
@@ -267,22 +281,6 @@ func (s *Service) runPartial(
 	parts []scanner.Offset,
 	ctx context.Context,
 ) {
-	stop := make(chan struct{})
-	defer close(stop)
-	// Ponytail: progress on partial = total bytes we'll write. We
-	// sum the selected ranges so the bar can hit 100%.
-	var total int64
-	for _, p := range parts {
-		total += p.EndByte - p.StartByte
-	}
-	go s.progressLoopTotal(jobID, stop, ctx, total, func() int64 {
-		// We don't have a per-write byte counter hooked into the
-		// streamer; emit a single "complete" tick after the pipe is
-		// drained in the goroutine below. The FE will treat any
-		// single-tick progress as indeterminate.
-		return 0
-	})
-
 	src, err := os.Open(filePath)
 	if err != nil {
 		_ = in.Close()
@@ -301,21 +299,86 @@ func (s *Service) runPartial(
 	const baseHeader = "SET FOREIGN_KEY_CHECKS=0;\nSET UNIQUE_CHECKS=0;\nSET NAMES utf8mb4;\n"
 	const footer = "SET FOREIGN_KEY_CHECKS=1;\nCOMMIT;\n"
 
-	// ponytail: a multi-database dump has no top-level USE; the
-	// selected parts belong to whatever database each part
-	// references. Use the first part's database so mariadb knows
-	// where to apply the CREATE/INSERT statements. If all parts
-	// are from the same database this is exact; if they're mixed
-	// the user picked inconsistent rows and we honor the first.
-	header := baseHeader
-	if len(parts) > 0 && parts[0].DatabaseName != "" {
-		header = "USE `" + parts[0].DatabaseName + "`;\n" + baseHeader
+	// ponytail: a multi-database dump's CREATE DATABASE / USE
+	// statements are NOT in the catalog (scanner only tracks
+	// CREATE TABLE and INSERT), so we synthesize them here.
+	// Without this, the first part that references a database
+	// that doesn't yet exist on the target fails with
+	// "Unknown database 'X'" and mariadb closes stdin — every
+	// later write hits a broken pipe. We collect every database
+	// the parts touch and emit `CREATE DATABASE IF NOT EXISTS`
+	// + `USE` for each before the parts stream.
+	var dbs []string
+	seen := make(map[string]struct{})
+	for _, p := range parts {
+		if p.DatabaseName == "" {
+			continue
+		}
+		if _, ok := seen[p.DatabaseName]; ok {
+			continue
+		}
+		seen[p.DatabaseName] = struct{}{}
+		dbs = append(dbs, p.DatabaseName)
 	}
+	var ddlHeader strings.Builder
+	for _, db := range dbs {
+		ddlHeader.WriteString("CREATE DATABASE IF NOT EXISTS `")
+		ddlHeader.WriteString(db)
+		ddlHeader.WriteString("`;\nUSE `")
+		ddlHeader.WriteString(db)
+		ddlHeader.WriteString("`;\n")
+	}
+	ddlHeader.WriteString(baseHeader)
+	header := ddlHeader.String()
+
+	// ponytail: before each CREATE TABLE part, synthesize a
+	// `DROP TABLE IF EXISTS` so the restore is idempotent.
+	// Without it, re-running partial restore against a server
+	// that already has the table fails with "Table 'X' already
+	// exists" and aborts the rest of the stream. The DROP is
+	// harmless on first run (IF EXISTS makes it a no-op).
+	// The DROP block must come AFTER `SET FOREIGN_KEY_CHECKS=0`
+	// so cross-table references in FKs don't reject the DROP.
+	dropHeader := &strings.Builder{}
+	for _, p := range parts {
+		if p.ObjectType != scanner.TypeCreateTable {
+			continue
+		}
+		if p.DatabaseName == "" || p.ObjectName == "" {
+			continue
+		}
+		dropHeader.WriteString("DROP TABLE IF EXISTS `")
+		dropHeader.WriteString(p.DatabaseName)
+		dropHeader.WriteString("`.`")
+		dropHeader.WriteString(p.ObjectName)
+		dropHeader.WriteString("`;\n")
+	}
+	// Insert DROP block AFTER baseHeader (which contains
+	// FOREIGN_KEY_CHECKS=0) so the DROP can ignore FKs.
+	idx := strings.Index(header, "SET NAMES utf8mb4;\n")
+	if idx >= 0 {
+		insertAt := idx + len("SET NAMES utf8mb4;\n")
+		header = header[:insertAt] + dropHeader.String() + header[insertAt:]
+	} else {
+		header = dropHeader.String() + header
+	}
+
+	// Ponytail: progress on partial = total bytes we'll write. We
+	// sum the selected ranges so the bar can hit 100%.
+	var total int64
+	for _, p := range parts {
+		total += p.EndByte - p.StartByte
+	}
+	total += int64(len(header)) + int64(len(footer))
+	counter := &countingWriter{w: in}
+	stop := make(chan struct{})
+	defer close(stop)
+	go s.progressLoopTotal(jobID, stop, ctx, total, counter.snapshot)
 
 	stream := streamer.Build(header, footer, src, stat.Size(), parts)
 	stripped := streamer.NewDefinerStripper(stream)
 
-	if _, copyErr := io.Copy(in, stripped); copyErr != nil {
+	if _, copyErr := io.Copy(counter, stripped); copyErr != nil {
 		_ = in.Close()
 		s.finishError(jobID, cmd, stderrBuf, copyErr)
 		return
@@ -380,29 +443,6 @@ func (s *Service) emitDone(jobID, status, message string) {
 		Status:  status,
 		Message: message,
 	})
-}
-
-func (s *Service) progressLoop(jobID, filePath string, stop <-chan struct{}, ctx context.Context) {
-	ticker := time.NewTicker(150 * time.Millisecond)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-stop:
-			return
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-			info, err := os.Stat(filePath)
-			if err != nil {
-				continue
-			}
-			_ = s.emitter.Emit(context.Background(), "restore:progress", Progress{
-				JobID: jobID,
-				SoFar: info.Size(),
-				Total: 0,
-			})
-		}
-	}
 }
 
 // progressLoopTotal emits one indeterminate tick at start (total known,
@@ -572,10 +612,15 @@ func validateFile(path string) error {
 func trimMsg(a, b string) string {
 	// ponytail: prefer stderr (a) because it usually carries the real
 	// mariadb error. Fall back to the subprocess exit error (b) when
-	// stderr is silent. Keep up to 240 chars and the first line.
+	// stderr is silent. MariaDB echoes the offending statement before
+	// the ERROR line, so we scan for the first "ERROR " token and
+	// return from there.
 	msg := a
 	if msg == "" {
 		msg = b
+	}
+	if i := strings.Index(msg, "ERROR "); i >= 0 {
+		msg = msg[i:]
 	}
 	if i := strings.IndexByte(msg, '\n'); i >= 0 {
 		msg = msg[:i]
@@ -591,3 +636,20 @@ func newID() string {
 	_, _ = rand.Read(b)
 	return fmt.Sprintf("rs-%x", b)
 }
+
+// countingWriter wraps an io.Writer and tracks the cumulative number
+// of bytes successfully written. The progress ticker reads snapshot()
+// to emit a soFar/total pair that reflects what was actually pushed
+// into mariadb stdin.
+type countingWriter struct {
+	w     io.Writer
+	bytes int64
+}
+
+func (c *countingWriter) Write(p []byte) (int, error) {
+	n, err := c.w.Write(p)
+	c.bytes += int64(n)
+	return n, err
+}
+
+func (c *countingWriter) snapshot() int64 { return c.bytes }

@@ -1,8 +1,7 @@
-// ponytail: thin wrapper around <input type="file"> that reports the
-// picked filename up via onChange. We don't route through
-// runtime.OpenFileDialog yet because the FE plan is standalone and
-// the BE-side file-resolution story is out of scope.
-import type { ChangeEvent } from 'react';
+// ponytail: uses Wails native file dialog to get the full filesystem
+// path directly, avoiding the browser's <input type="file"> which
+// only exposes the filename for security reasons.
+import { OpenDumpFileDialog } from '../../wailsjs/go/app/App';
 
 export interface FilePickerProps {
   id: string;
@@ -10,17 +9,20 @@ export interface FilePickerProps {
   onChange: (path: string) => void;
 }
 
-export function FilePicker({ id, accept, onChange }: FilePickerProps) {
+export function FilePicker({ id, onChange }: FilePickerProps) {
+  const handleClick = async () => {
+    const path = await OpenDumpFileDialog();
+    if (path) onChange(path);
+  };
+
   return (
-    <input
+    <button
       id={id}
-      type="file"
-      accept={accept}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-        const f = e.target.files?.[0];
-        if (f) onChange(f.name);
-      }}
-      className="block w-full text-sm text-slate-300 file:mr-3 file:rounded-md file:border-0 file:bg-slate-700 file:px-3 file:py-1.5 file:text-sm file:text-white hover:file:bg-slate-600"
-    />
+      type="button"
+      onClick={handleClick}
+      className="block w-full text-sm text-slate-300 bg-slate-900 border border-slate-700 rounded-md px-3 py-1.5 text-left hover:bg-slate-800"
+    >
+      Choose file...
+    </button>
   );
 }

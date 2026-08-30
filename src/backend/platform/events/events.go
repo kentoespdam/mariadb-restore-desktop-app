@@ -22,17 +22,21 @@ type Emitter interface {
 	Emit(ctx context.Context, name string, payload any) error
 }
 
-// Default returns the Wails-backed emitter. Call from a goroutine that has
-// access to a Wails ctx (typically the OnStartup hook).
-func Default(ctx context.Context) Emitter { return wailsEmitter{ctx: ctx} }
+// Default returns the Wails-backed emitter. The Wails ctx is looked
+// up dynamically via GetWailsContext at Emit time so the emitter
+// doesn't capture a stale context (e.g. context.Background passed at
+// New before OnStartup ran). Call SetWailsContext once from OnStartup
+// to register the live ctx.
+func Default(_ context.Context) Emitter { return wailsEmitter{} }
 
-type wailsEmitter struct{ ctx context.Context }
+type wailsEmitter struct{}
 
-func (w wailsEmitter) Emit(_ context.Context, name string, payload any) error {
-	if w.ctx == nil {
-		return fmt.Errorf("events: nil wails ctx")
+func (wailsEmitter) Emit(_ context.Context, name string, payload any) error {
+	ctx := GetWailsContext()
+	if ctx == nil {
+		return fmt.Errorf("events: no wails ctx registered")
 	}
-	runtime.EventsEmit(w.ctx, name, payload)
+	runtime.EventsEmit(ctx, name, payload)
 	return nil
 }
 
@@ -62,3 +66,7 @@ var globalWailsCtx context.Context
 // SetWailsContext registers the active Wails context. Call once from
 // OnStartup.
 func SetWailsContext(ctx context.Context) { globalWailsCtx = ctx }
+
+// GetWailsContext returns the Wails ctx registered via SetWailsContext.
+// Returns nil if not yet set (e.g. OnStartup has not run).
+func GetWailsContext() context.Context { return globalWailsCtx }

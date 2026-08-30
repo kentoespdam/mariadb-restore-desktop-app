@@ -5,12 +5,17 @@ const listServerProfiles = vi.fn();
 const startFullRestore = vi.fn();
 const cancelRestore = vi.fn();
 const analyzeDump = vi.fn();
+const openDumpFileDialog = vi.fn();
 
 vi.mock('@/api', () => ({
   ListServerProfiles: (...a: unknown[]) => listServerProfiles(...a),
   startFullRestore: (...a: unknown[]) => startFullRestore(...a),
   cancelRestore: (...a: unknown[]) => cancelRestore(...a),
   analyzeDump: (...a: unknown[]) => analyzeDump(...a),
+}));
+
+vi.mock('../../wailsjs/go/app/App', () => ({
+  OpenDumpFileDialog: (...a: unknown[]) => openDumpFileDialog(...a),
 }));
 
 const listeners = new Map<string, (...data: unknown[]) => void>();
@@ -33,6 +38,7 @@ beforeEach(() => {
   startFullRestore.mockReset();
   cancelRestore.mockReset();
   analyzeDump.mockReset();
+  openDumpFileDialog.mockReset();
   listeners.clear();
   window.location.hash = '';
   listServerProfiles.mockResolvedValue([
@@ -46,6 +52,7 @@ beforeEach(() => {
       sslMode: 'preferred',
     },
   ]);
+  openDumpFileDialog.mockResolvedValue('/tmp/dump.sql');
 });
 
 afterEach(() => {
@@ -62,6 +69,14 @@ const analyzeButton = (root: HTMLElement) => {
   const el = root.querySelector<HTMLButtonElement>('button[data-action="analyze"]');
   if (!el) throw new Error('analyze button not found');
   return el;
+};
+
+const selectFile = async (container: HTMLElement) => {
+  const fileButton = container.querySelector<HTMLButtonElement>('#file');
+  if (!fileButton) throw new Error('file picker button not found');
+  await act(async () => {
+    fireEvent.click(fileButton);
+  });
 };
 
 describe('Restore', () => {
@@ -88,10 +103,7 @@ describe('Restore', () => {
     await waitFor(() => {
       expect(restoreButton(container)).toBeInTheDocument();
     });
-    const fileInput = getByLabelText(/Dump file/) as HTMLInputElement;
-    const file = new File(['x'], 'dump.sql', { type: 'application/sql' });
-    Object.defineProperty(fileInput, 'files', { value: [file] });
-    fireEvent.change(fileInput);
+    await selectFile(container);
     fireEvent.change(getByLabelText(/Target server profile/), { target: { value: 'p1' } });
 
     await act(async () => {
@@ -99,7 +111,7 @@ describe('Restore', () => {
     });
 
     expect(startFullRestore).toHaveBeenCalledWith({
-      filePath: 'dump.sql',
+      filePath: '/tmp/dump.sql',
       profileId: 'p1',
     });
   });
@@ -110,11 +122,7 @@ describe('Restore', () => {
     await waitFor(() => {
       expect(restoreButton(container)).toBeInTheDocument();
     });
-    const fileInput = getByLabelText(/Dump file/) as HTMLInputElement;
-    Object.defineProperty(fileInput, 'files', {
-      value: [new File(['x'], 'dump.sql')],
-    });
-    fireEvent.change(fileInput);
+    await selectFile(container);
     fireEvent.change(getByLabelText(/Target server profile/), { target: { value: 'p1' } });
     await act(async () => {
       fireEvent.click(restoreButton(container));
@@ -136,11 +144,7 @@ describe('Restore', () => {
     await waitFor(() => {
       expect(restoreButton(container)).toBeInTheDocument();
     });
-    const fileInput = getByLabelText(/Dump file/) as HTMLInputElement;
-    Object.defineProperty(fileInput, 'files', {
-      value: [new File(['x'], 'dump.sql')],
-    });
-    fireEvent.change(fileInput);
+    await selectFile(container);
     fireEvent.change(getByLabelText(/Target server profile/), { target: { value: 'p1' } });
     await act(async () => {
       fireEvent.click(restoreButton(container));
@@ -160,19 +164,15 @@ describe('Restore', () => {
     await waitFor(() => {
       expect(analyzeButton(container)).toBeInTheDocument();
     });
-    const fileInput = getByLabelText(/Dump file/) as HTMLInputElement;
-    Object.defineProperty(fileInput, 'files', {
-      value: [new File(['x'], 'dump.sql')],
-    });
-    fireEvent.change(fileInput);
+    await selectFile(container);
     fireEvent.change(getByLabelText(/Target server profile/), { target: { value: 'p1' } });
 
     await act(async () => {
       fireEvent.click(analyzeButton(container));
     });
 
-    expect(analyzeDump).toHaveBeenCalledWith('dump.sql');
-    expect(window.location.hash).toBe('#/restore/select?file=dump.sql&profile=p1');
+    expect(analyzeDump).toHaveBeenCalledWith('/tmp/dump.sql');
+    expect(window.location.hash).toBe('#/restore/select?file=%2Ftmp%2Fdump.sql&profile=p1');
   });
 
   it('error from startFullRestore renders inline', async () => {
@@ -181,11 +181,7 @@ describe('Restore', () => {
     await waitFor(() => {
       expect(restoreButton(container)).toBeInTheDocument();
     });
-    const fileInput = getByLabelText(/Dump file/) as HTMLInputElement;
-    Object.defineProperty(fileInput, 'files', {
-      value: [new File(['x'], 'dump.sql')],
-    });
-    fireEvent.change(fileInput);
+    await selectFile(container);
     fireEvent.change(getByLabelText(/Target server profile/), { target: { value: 'p1' } });
     await act(async () => {
       fireEvent.click(restoreButton(container));

@@ -113,24 +113,52 @@ func (s *Scanner) Scan(path string) ([]Object, error) {
 	}
 }
 
-// extractIdent returns the first backtick-quoted or bare identifier that
-// follows the given prefix on a line.
+// extractIdent returns the TABLE name from a line like
+//
+//	CREATE TABLE `db`.`users` (   or   CREATE TABLE `users` (
+//
+// The mariadb-dump output prefixes tables with their database
+// (`db`.`table`); bare dumps (no `USE`, mysqldump --skip-add-drop-table)
+// use just the table name. In both cases the table name is the LAST
+// backtick-quoted segment on the line.
 func extractIdent(line, prefix string) string {
 	rest := strings.TrimPrefix(line, prefix)
 	rest = strings.TrimLeft(rest, " \t")
 	if rest == "" {
 		return ""
 	}
+	// Backtick path: walk backtick pairs from the left and return
+	// the LAST pair's contents. `db`.`table` -> "table"; `table` -> "table".
 	if rest[0] == '`' {
-		if i := strings.IndexByte(rest[1:], '`'); i >= 0 {
-			return rest[1 : 1+i]
+		i := 0
+		last := ""
+		for {
+			// find closing backtick of current pair
+			j := strings.IndexByte(rest[i+1:], '`')
+			if j < 0 {
+				return last
+			}
+			last = rest[i+1 : i+1+j]
+			// advance past closing backtick
+			i = i + 1 + j + 1
+			// if the next chars are "`.`", that's the separator
+			// before the table name; continue to grab the next pair.
+			if i+1 < len(rest) && rest[i] == '.' && rest[i+1] == '`' {
+				i = i + 1 // land on the opening backtick of the next pair
+				continue
+			}
+			// no more pairs
+			return last
 		}
-		return ""
 	}
-	// bare identifier up to next space, dot, paren, or semicolon
+	// bare identifier up to next space, paren, or semicolon — but
+	// for `db.table`, we want `table` (the part after the dot).
+	if i := strings.LastIndex(rest, "."); i >= 0 {
+		rest = rest[i+1:]
+	}
 	end := len(rest)
 	for i, r := range rest {
-		if r == ' ' || r == '.' || r == '(' || r == ';' || r == '\t' {
+		if r == ' ' || r == '(' || r == ';' || r == '\t' {
 			end = i
 			break
 		}

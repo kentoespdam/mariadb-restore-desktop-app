@@ -33,7 +33,11 @@
     Quit: noop, Hide: noop, Show: noop,
     ClipboardGetText: () => '', ClipboardSetText: noop,
     OnFileDrop: noop, OnFileDropOff: noop,
-    CanResolveFilePaths: () => false, ResolveFilePaths: (f) => f,
+    CanResolveFilePaths: () => true, ResolveFilePaths: (files) => {
+      for (const f of files) {
+        Object.defineProperty(f, 'path', { value: f.name, configurable: true });
+      }
+    },
     InitializeNotifications: noop, CleanupNotifications: noop,
     IsNotificationAvailable: () => false,
     RequestNotificationAuthorization: noop, CheckNotificationAuthorization: () => false,
@@ -59,6 +63,7 @@
     StartBackup: (req) => Promise.resolve('backup-job-' + Date.now()),
     CancelBackup: noopFn,
     // Restore
+    OpenDumpFileDialog: () => Promise.resolve('/tmp/mock-dump.sql'),
     AnalyzeDump: (path) => Promise.resolve(5),
     ListCatalogObjects: (path) => Promise.resolve([
       { id: 1, database: 'shop', name: 'products', type: 'CREATE_TABLE', startByte: 0, endByte: 500 },
